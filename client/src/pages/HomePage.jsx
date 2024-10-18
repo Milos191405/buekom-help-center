@@ -1,8 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
-function HomePage() {
-    const navigate = useNavigate();
+function HomePage({ isLoggedIn }) {
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if(storedUsername) {
+      setUsername(storedUsername);
+    }
+   }, []);
 
   const handleSignIn = () => {
     navigate("/signIn");
@@ -18,7 +27,9 @@ function HomePage() {
         <div className="flex items-center justify-center  ">
           <article className="text-center">
             <h1 className="text-4xl font-bold mb-4">büKOM Help Center</h1>
-            <p className="text-lg">To continue, make an account and login</p>
+            {!isLoggedIn && (
+              <p className="text-lg">To continue, make an account and login</p>
+            )}
           </article>
         </div>
 
@@ -36,9 +47,17 @@ function HomePage() {
             Sign In
           </button>
         </ul>
+        {isLoggedIn ? (
+          <h1>Welcome {username}!</h1> // Correct placement of the greeting message
+        ) : (
+          <h1>Please log in or sign up.</h1>
+        )}
       </div>
     </>
   );
 }
 
+HomePage.propTypes = {
+  isLoggedIn: PropTypes.bool.isRequired,
+};
 export default HomePage;
