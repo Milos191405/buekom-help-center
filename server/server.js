@@ -4,6 +4,7 @@ import { ENV_VARS } from "./config/envVars.js";
 import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ const app = express();
 const PORT = ENV_VARS.PORT;
 
 // Middleware
+app.use(cors())
 app.use(express.json());
 app.use(cookieParser());
 
