@@ -30,7 +30,7 @@ function SignUp({ setIsLoggedIn, setUsername }) {
       if (response.data.success) {
         setIsLoggedIn(true);
         localStorage.setItem("username", username);
-        localStorage.setItem("isLoggedIn", "true"); // Ensure to set this as well
+        localStorage.setItem("isLoggedIn", "true");
         setMessage("Sign up successful");
         navigate("/");
       } else {

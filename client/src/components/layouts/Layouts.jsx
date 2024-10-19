@@ -6,7 +6,7 @@ function Layout({ children }) {
     <>
       <Navbar />
       {children}
-      <Outlet /> {/* Include Outlet for nested routing */}
+      <Outlet /> 
       <Footer />
     </>
   );

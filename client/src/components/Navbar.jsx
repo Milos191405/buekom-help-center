@@ -1,14 +1,10 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
 import PropTypes from "prop-types";
 
-function Navbar({ isLoggedIn, onLogout }) {
+function Navbar({ isLoggedIn, onLogout, username }) {
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
-
-  // const handleClick = () => setNav(!nav);
-  // const closeMenu = () => setNav(false);
 
   const handleSignIn = () => {
     navigate("/signIn");
@@ -23,6 +19,11 @@ function Navbar({ isLoggedIn, onLogout }) {
     navigate("/");
   };
 
+  // const navLinks = [
+  //   { to: "/search", label: "Search" },
+  //   { to: "/updateFiles", label: "Update Files" },
+  // ];
+
   // Debugging log to check the isLoggedIn state
   console.log("Is Logged In:", isLoggedIn);
 
@@ -30,7 +31,7 @@ function Navbar({ isLoggedIn, onLogout }) {
     <nav
       className={`fixed top-0 w-full border bottom-2 ${
         nav ? "h-screen" : "h-[80px] lg:h-[100px]"
-      } flex justify-evenly items-center px-4 md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out`}
+      } md:flex justify-evenly items-center px-4 md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out`}
     >
       <div className="flex justify-center items-center w-60">
         {/* Logo */}
@@ -59,9 +60,23 @@ function Navbar({ isLoggedIn, onLogout }) {
 
       {/* Desktop Menu */}
       <ul className="hidden lg:flex gap-2 text-sm lg:text-lg xl:text-lg 2xl:text-xl lg:gap-3 border ">
-        {/* Add navLinks here if you have them */}
+        {isLoggedIn && (
+          <>
+            <li className="px-4">
+              <Link to="/search">Search</Link>
+            </li>
+            {/* Show "Update Files" only for admin */}
+            {isLoggedIn && username === "admin" && (
+             
+               
+                <li className="px-4">
+                  <Link to="/updateFiles">Update Files</Link>
+                </li>
+             
+            )}
+          </>
+        )}
       </ul>
-
       {/* Mobile Menu */}
       <ul
         id="mobile-menu"
@@ -82,7 +97,7 @@ function Navbar({ isLoggedIn, onLogout }) {
       </ul>
 
       {/* Logout or Sign In/Up Buttons */}
-      <ul className="hidden lg:flex w-60 justify-around">
+      <ul className="hidden md:flex w-60 justify-around">
         {isLoggedIn ? (
           <button
             className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
@@ -113,8 +128,8 @@ function Navbar({ isLoggedIn, onLogout }) {
 
 Navbar.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired, // PropType for isLoggedIn
-  username: PropTypes.string.isRequired, // PropType for username
-  onLogout: PropTypes.func.isRequired, // PropType for onLogout
+  onLogout: PropTypes.func.isRequired,
+  username: PropTypes.string
 };
 
 export default Navbar;

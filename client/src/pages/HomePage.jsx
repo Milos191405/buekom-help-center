@@ -40,7 +40,7 @@ function HomePage({ isLoggedIn }) {
           >
             Sign Up
           </button>
-          <button
+          <button 
             className=" border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] "
             onClick={handleSignIn}
           >
