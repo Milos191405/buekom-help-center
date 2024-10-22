@@ -1,0 +1,36 @@
+[33mcommit 571626b067339b128766979a9c21912fec930c9b[m[33m ([m[1;36mHEAD[m[33m)[m
+Author: Milos Mirkovic <milos.mirkovic7@gmail.com>
+Date:   Fri Oct 18 13:50:42 2024 +0200
+
+    navbar problem
+
+[33mcommit cd7812d802fbc199455fd6fe33977185ce15977c[m
+Author: Milos Mirkovic <milos.mirkovic7@gmail.com>
+Date:   Fri Oct 18 10:39:28 2024 +0200
+
+    finishing backend,SignUp, signIn and login. working on frontend
+
+[33mcommit 96ddc4855a1e493e9dc899616cde1ddf5b05fb3d[m
+Merge: 89e90bd ea0dc5c
+Author: Milos Mirkovic <milos.mirkovic7@gmail.com>
+Date:   Fri Oct 18 10:39:03 2024 +0200
+
+    Merge branch 'main' of github.com:Milos191405/buekom-help-center
+
+[33mcommit 89e90bd3334114a8d1c06d340bfd74b02485cc0d[m
+Author: Milos Mirkovic <milos.mirkovic7@gmail.com>
+Date:   Fri Oct 18 10:38:36 2024 +0200
+
+    adding middleware to backend and working on frontend
+
+[33mcommit ea0dc5c8894b6903f9ab19ecbb01a6ce3339300a[m
+Author: Milos <milos.mirkovic7@gmail.com>
+Date:   Thu Oct 17 22:13:09 2024 +0200
+
+    Updating Readme
+
+[33mcommit 9d3e6bda255f13b5adbc6739ea4f7195f5083ea0[m
+Author: Milos191405 <milos.mirkovic7@gmail.com>
+Date:   Thu Oct 17 08:55:57 2024 +0200
+
+    Initial commit

@@ -79,7 +79,9 @@ function UpdateFiles({ isLoggedIn, username }) {
     <>
       <article className="mt-[200px] bg-gray-200">
         <div>
-          <h2 className="text-2xl font-semibold mb-4 text-center pt-[20px]">Update Files</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-center pt-[20px]">
+            Update Files
+          </h2>
           <form
             onSubmit={handleFileUpload}
             className="mb-6 w-3/4 mx-auto  flex flex-col"
