@@ -17,6 +17,7 @@ function SearchByOptions({ isLoggedIn }) {
 
   return (
     <ul className="flex">
+      md
       {isLoggedIn && (
         <>
           {/* Dropdown 1: Search By Category */}

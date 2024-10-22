@@ -1,12 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import HomePage from "./pages/HomePage";
-// import Layout from "./components/Layout";
-import Windows from "./components/Windows.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Navbar from "./components/Navbar";
 import Search from "./pages/Search.jsx";
+import UpdateFiles from "./pages/UpdateFiles.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,18 +22,22 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    console.log("Logging out"); 
+    console.log("Logging out");
     setIsLoggedIn(false);
     localStorage.removeItem("username");
     localStorage.removeItem("isLoggedIn");
     setUsername("");
   };
 
-  console.log("Is Logged In in App:", isLoggedIn); 
+  console.log("Is Logged In in App:", isLoggedIn);
 
   return (
     <>
-      <Navbar isLoggedIn={isLoggedIn} username={username} onLogout={handleLogout} />
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        username={username}
+        onLogout={handleLogout}
+      />
       <Routes>
         <Route
           path="/"
@@ -54,15 +57,12 @@ function App() {
         />
         <Route
           path="/search"
-          element={
-            <Search setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
-          }
+          element={<Search isLoggedIn={isLoggedIn} username={username} />}
         />
         <Route
-          path="/search"
-          element={<Search isLoggedIn={isLoggedIn} />} // Pass the isLoggedIn prop here
+          path="/update-files"
+          element={<UpdateFiles isLoggedIn={isLoggedIn} username={username} />}
         />
-        <Route path="/windows" element={<Windows />} />
       </Routes>
     </>
   );
