@@ -1,18 +1,24 @@
-import jwt from "jsonwebtoken";
-import { ENV_VARS } from "../config/envVars.js";
+import jwt from "jsonwebtoken"; 
 
-export const generateTokenAndSendCookie = (res, userId) => {
-  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: "60d",
-  });
+export const generateTokenAndSendCookie = (res, userId, role) => {
+  try {
+    const token = jwt.sign(
+      { id: userId, role:role }, 
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-  // Set cookie
-  res.cookie("jwt-buekom", token, {
-    maxAge: 60 * 24 * 60 * 60 * 1000, // 60 days
-    httpOnly: true, // Prevents XSS attacks
-    sameSite: "strict", // CSRF protection
-    secure: ENV_VARS.NODE_ENV === "production", // Secure cookies only in production
-  });
+    // Send token in the cookie
+    res.cookie("jwt-buekom", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000, // 1 hour
+    });
 
-  return token;
+    return token;
+  } catch (error) {
+    console.error("Error generating token:", error.message);
+    throw new Error("Error generating token");
+  }
 };

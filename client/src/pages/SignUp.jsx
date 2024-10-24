@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 function SignUp({ setIsLoggedIn, setUsername }) {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

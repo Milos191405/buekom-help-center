@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp.jsx";
 import Navbar from "./components/Navbar";
 import Search from "./pages/Search.jsx";
 import UpdateFiles from "./pages/UpdateFiles.jsx";
+import CreateUser from "./pages/CreateNewUser.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -49,10 +50,16 @@ function App() {
             <SignIn setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
           }
         />
-        <Route
+        {/* <Route
           path="/signUp"
           element={
             <SignUp setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
+          }
+        /> */}
+        <Route
+          path="/create-user"
+          element={
+            <CreateUser setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} />
           }
         />
         <Route

@@ -3,7 +3,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import Logo from "../assets/bükom-logo.png";
 
-function Navbar({ isLoggedIn, onLogout, username }) {
+
+function Navbar({ isLoggedIn, onLogout, username}) {
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
 
@@ -70,18 +71,32 @@ function Navbar({ isLoggedIn, onLogout, username }) {
             </li>
             {/* Show "Update Files" only for admin */}
             {isLoggedIn && username === "admin" && (
-              <li className="px-4">
-                <NavLink
-                  to="/update-files"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "text-[#fa4915]"
-                      : "text-[#005873] hover:text-[#fa4915]"
-                  }
-                >
-                  Update Files
-                </NavLink>
-              </li>
+              <div>
+                <li className="px-4">
+                  <NavLink
+                    to="/update-files"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-[#fa4915]"
+                        : "text-[#005873] hover:text-[#fa4915]"
+                    }
+                  >
+                    Update Files
+                  </NavLink>
+                </li>
+                <li className="px-4">
+                  <NavLink
+                    to="/create-user"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-[#fa4915]"
+                        : "text-[#005873] hover:text-[#fa4915]"
+                    }
+                  >
+                    Create new user
+                  </NavLink>
+                </li>
+              </div>
             )}
           </>
         )}

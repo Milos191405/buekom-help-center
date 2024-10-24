@@ -1,23 +1,27 @@
-// auth.routes.js
 import express from "express";
 import { signup, login, logout } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/authenticate.js";
+import { createAdmin, createUser } from "../controllers/admin.controller.js";
+import { checkAdmin } from "../middleware/checkAdmin.js";
+import { User } from "../models/user.model.js"; // Import User model
 
 const router = express.Router();
 
-// User signup route
 router.post("/signup", signup);
-
-// User login route
 router.post("/login", login);
-
-// User logout route
 router.post("/logout", logout);
 
-// User profile route
+// Admin creation route (Only authenticated users)
+router.post("/admin/create-admin", authenticate, createAdmin);
+
+// User creation route (Only admins can create users)
+router.post("/admin/create-user", authenticate, checkAdmin, createUser);
+
+// Profile fetching route (Only authenticated users)
 router.get("/profile", authenticate, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user.id).select("-password"); // Exclude password
+
     if (!user) {
       return res
         .status(404)
@@ -26,9 +30,9 @@ router.get("/profile", authenticate, async (req, res) => {
 
     res.status(200).json({ success: true, user });
   } catch (error) {
+    console.error("Error fetching user profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 
-// Export the authentication router
 export default router;

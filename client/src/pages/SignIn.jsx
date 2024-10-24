@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-function SignIn({ setIsLoggedIn, setUsername }) {
+function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
@@ -24,6 +24,9 @@ function SignIn({ setIsLoggedIn, setUsername }) {
         {
           username,
           password,
+        },
+        {
+          withCredentials: true,
         }
       );
 
