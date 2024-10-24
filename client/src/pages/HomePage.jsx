@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-function HomePage({ isLoggedIn }) {
+
+function HomePage({ isLoggedIn, role }) {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ function HomePage({ isLoggedIn }) {
 
         {isLoggedIn ? (
           <h1 className="text-xl ">
-            Welcome <span className="text-orange-500">{username}</span>!
+            Welcome <span className="text-orange-500">{username} - {role}</span>!
           </h1>
         ) : (
           <h1>Please log in or sign up.</h1>
@@ -48,5 +49,6 @@ function HomePage({ isLoggedIn }) {
 
 HomePage.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
+  role: PropTypes.string,
 };
 export default HomePage;

@@ -3,8 +3,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import Logo from "../assets/bükom-logo.png";
 
-
-function Navbar({ isLoggedIn, onLogout, username}) {
+function Navbar({ isLoggedIn, onLogout, username, role }) {
+  console.log("Role in Navbar", role);
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ function Navbar({ isLoggedIn, onLogout, username}) {
   };
 
   const handleSignUp = () => {
-    navigate("/signUp");
+    navigate("/create-admin");
   };
 
   const handleLogout = () => {
@@ -21,40 +21,22 @@ function Navbar({ isLoggedIn, onLogout, username}) {
     navigate("/");
   };
 
-
-  // const navLinks = [
-  //   { to: "/search", label: "Search" },
-  //   { to: "/updateFiles", label: "Update Files" },
-  // ];
-
-  // Debugging log to check the isLoggedIn state
-  console.log("Is Logged In:", isLoggedIn);
+  console.log("Role in Navbar", role);
 
   return (
     <nav
-      className="fixed top-0 w-full flex flex-col gap-5 items-center h-[200px]  border-b-2 bottom-[#fa4915]  
+      className="fixed top-0 w-full flex flex-col gap-5 items-center h-[200px] border-b-2 bottom-[#fa4915]  
       md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out"
     >
       <div className="flex justify-center items-center w-60 mt-2">
         {/* Logo */}
-        <NavLink to="/" className=" ">
+        <NavLink to="/" className="">
           <img src={Logo} alt="Logo" className="w-[200px] xl:w-[250px] z-50" />
         </NavLink>
       </div>
-      {/* Hamburger Icon */}
-      {/* Uncomment this section for a mobile menu toggle */}
-      {/* <button
-          onClick={handleClick}
-          className="lg:hidden z-50 cursor-pointer absolute top-6 right-4 "
-          aria-controls="mobile-menu"
-          aria-expanded={nav ? "true" : "false"}
-          aria-label="Toggle navigation menu"
-        >
-          {!nav ? <FaBars /> : <FaTimes />}
-        </button> */}
 
       {/* Desktop Menu */}
-      <ul className="flex lg:flex gap-2 text-lg xl:text-lg 2xl:text-xl lg:gap-3  ">
+      <ul className="flex lg:flex gap-2 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
         {isLoggedIn && (
           <>
             <li className="px-4">
@@ -69,9 +51,10 @@ function Navbar({ isLoggedIn, onLogout, username}) {
                 Search
               </NavLink>
             </li>
-            {/* Show "Update Files" only for admin */}
-            {isLoggedIn && username === "admin" && (
-              <div>
+
+            {/* Show "Update Files" and "Create new user" only for admin */}
+            {role === "admin" && (
+              <>
                 <li className="px-4">
                   <NavLink
                     to="/update-files"
@@ -96,35 +79,25 @@ function Navbar({ isLoggedIn, onLogout, username}) {
                     Create new user
                   </NavLink>
                 </li>
-              </div>
+              </>
             )}
           </>
         )}
       </ul>
-      {/* Mobile Menu */}
-      {/* <ul
-        id="mobile-menu"
-        className={`${
-          nav ? "flex" : "hidden"
-        } absolute top-0 left-0 w-full h-screen bg-[#fffdfd] text-gray-700 flex-col justify-center z-40`}
-      > */}
-      {/* Uncomment this section for mobile navigation links */}
-      {/* {navLinks.map(({ to, label }) => (
-          <li
-            key={to}
-            onClick={closeMenu}
-            className="text-xl text-left py-2 hover:text-gray-700 mb-2 w-screen px-6 border-b border-gray-300"
-          >
-            <Link to={to}>{label}</Link>
-          </li>
-        ))} */}
-      {/* </ul> */}
+
+      {/* Display username and role */}
+      {isLoggedIn && (
+        <div className="text-gray-700">
+          <span>Welcome, {username}! </span>
+          <span>Role: {role}</span>
+        </div>
+      )}
 
       {/* Logout or Sign In/Up Buttons */}
-      <ul className=" flex ">
+      <ul className="flex">
         {isLoggedIn ? (
           <button
-            className=" border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
+            className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
             onClick={handleLogout}
           >
             Logout
@@ -136,7 +109,7 @@ function Navbar({ isLoggedIn, onLogout, username}) {
                 className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
                 onClick={handleSignUp}
               >
-                Sign Up
+                Create Admin
               </button>
               <button
                 className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
@@ -153,9 +126,10 @@ function Navbar({ isLoggedIn, onLogout, username}) {
 }
 
 Navbar.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired, // PropType for isLoggedIn
+  isLoggedIn: PropTypes.bool.isRequired,
   onLogout: PropTypes.func.isRequired,
-  username: PropTypes.string
+  username: PropTypes.string,
+  role: PropTypes.string, // Ensure the role prop is passed
 };
 
 export default Navbar;

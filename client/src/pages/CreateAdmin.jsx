@@ -1,54 +1,48 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 
-function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
+function CreateAdmin( {onLogin}) {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear any previous message
-    setMessage(null);
-
-    // Check for empty fields
+    // Validation check
     if (!username || !password) {
       return setMessage("Please fill out all fields");
     }
+    if (username.length < 3) {
+      return setMessage("Username must be at least 3 characters long");
+    }
+    if (password.length < 6) {
+      return setMessage("Password must be at least 6 characters long");
+    }
 
     setLoading(true);
+    setMessage(null); // Reset the message
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { username, password},
-        { withCredentials: true }
+        "http://localhost:5000/api/auth/admin/create-admin",
+        { username, password }, // Only username and password for admin creation
+        { withCredentials: true } // Include cookies (JWT)
       );
 
       if (response.data.success) {
-        const { user } = response.data;
-        
-      console.log("user role from response", user.role)
-        // Set user state and localStorage values upon successful login
-        setIsLoggedIn(true);
-        setUsername(username);
-        setUserRole(user.role); // Ensure the role is received from the server response
-        localStorage.setItem("username", username);
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("role", response.data.role); // Store role in localStorage
+        setMessage("Admin created successfully");
 
-        setMessage("Login successful");
-        navigate("/"); // Redirect to homepage
+        // Reset fields after successful creation
+        setUsernameLocal("");
+        setPassword("");
       } else {
-        setMessage(response.data.message || "Login failed");
+        setMessage(response.data.message || "Admin creation failed");
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || "Error during login process");
+      console.error("Error creating admin:", error);
+      setMessage(error.response?.data?.message || "Error creating admin");
     } finally {
       setLoading(false);
     }
@@ -57,16 +51,24 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="border p-4 rounded shadow-lg">
-        <h2 className="text-center mb-4">Sign In</h2>
+        <h2 className="text-center mb-4">Create Admin</h2>
         <form onSubmit={handleSubmit} className="flex flex-col w-60">
+          <label htmlFor="username" className="mb-1">
+            Username
+          </label>
           <input
+            id="username"
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsernameLocal(e.target.value)}
             className="border p-2 mb-2 rounded"
           />
+          <label htmlFor="password" className="mb-1">
+            Password
+          </label>
           <input
+            id="password"
             type="password"
             placeholder="Password"
             value={password}
@@ -76,9 +78,9 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
           <button
             type="submit"
             className="border p-2 rounded text-white bg-[#005873] hover:bg-[#fa4915]"
-            disabled={loading || !username || !password} // Disable button if loading or fields are empty
+            disabled={loading}
           >
-            {loading ? "Logging In ..." : "Log In"}
+            {loading ? "Creating..." : "Create Admin"}
           </button>
         </form>
         {message && (
@@ -89,10 +91,4 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
   );
 }
 
-SignIn.propTypes = {
-  setIsLoggedIn: PropTypes.func.isRequired,
-  setUsername: PropTypes.func.isRequired,
-  setUserRole: PropTypes.func.isRequired,
-};
-
-export default SignIn;
+export default CreateAdmin;
