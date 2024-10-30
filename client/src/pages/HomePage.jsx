@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 
+
 function HomePage({ isLoggedIn, role }) {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function HomePage({ isLoggedIn, role }) {
 
         {isLoggedIn ? (
           <h1 className="text-xl ">
-            Welcome <span className="text-orange-500">{username} - {role}</span>!
+            Welcome <span className="text-orange-500">{username}</span>!
           </h1>
         ) : (
           <h1>Please log in or sign up.</h1>

@@ -2,49 +2,43 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import File from "../models/File.js"; // Import your File model
+import File from "../models/File.js"; // Import the File model
 
 const router = express.Router();
 
-// Set up storage for uploaded files
+// Configure Multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(process.cwd(), "uploads");
-    // Create the uploads directory if it doesn't exist
     if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+      fs.mkdirSync(dir); // Create the uploads directory if it doesn't exist
     }
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    // Create a unique filename using timestamp and random number
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-// Initialize multer with the defined storage
 const upload = multer({ storage });
 
-// Endpoint for uploading a single file
-router.post("/", upload.single("file"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded." });
+// Endpoint for uploading multiple files
+router.post("/", upload.array("files"), async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ message: "No files uploaded." });
   }
 
   try {
-    // Create a new file document
-    const newFile = new File({
-      filename: req.file.filename, // File name saved in the uploads folder
-      originalName: req.file.originalname, // Original file name uploaded by the user
-    });
-
-    // Save the file document to MongoDB
-    await newFile.save();
+    const fileDocs = req.files.map((file) => ({
+      filename: file.filename,
+      originalName: file.originalname,
+    }));
+    await File.insertMany(fileDocs); // Save multiple files in MongoDB
 
     res.status(200).json({
-      message: "File uploaded successfully.",
-      file: req.file.filename, // Respond with the filename
+      message: "Files uploaded successfully.",
+      files: req.files.map((file) => file.filename),
     });
   } catch (error) {
     console.error(error);
@@ -52,10 +46,10 @@ router.post("/", upload.single("file"), async (req, res) => {
   }
 });
 
-// Endpoint to retrieve uploaded files
+// Endpoint to retrieve all uploaded files
 router.get("/", async (req, res) => {
   try {
-    const files = await File.find(); // Fetch all files from the database
+    const files = await File.find();
     res.status(200).json({ files });
   } catch (error) {
     console.error(error);
@@ -63,19 +57,37 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Endpoint to serve the uploaded files
+// Endpoint to serve a file's content
 router.get("/files/:filename", (req, res) => {
-  const fileName = req.params.filename; // Get the filename from the request parameters
-  const filePath = path.join(process.cwd(), "uploads", fileName); // Construct the file path
+  const filePath = path.join(process.cwd(), "uploads", req.params.filename);
 
-  // Check if the file exists
   if (fs.existsSync(filePath)) {
-    // Send the file to the client
     res.sendFile(filePath);
   } else {
     res.status(404).json({ message: "File not found." });
   }
 });
 
-// Export the upload router
+// Endpoint to delete a file
+router.delete("/:filename", async (req, res) => {
+  const filePath = path.join(process.cwd(), "uploads", req.params.filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "File not found." });
+  }
+
+  try {
+    fs.unlinkSync(filePath);
+    const result = await File.deleteOne({ filename: req.params.filename });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "File metadata not found." });
+    }
+
+    res.status(200).json({ message: "File deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    res.status(500).json({ message: "Error deleting file." });
+  }
+});
+
 export default router;

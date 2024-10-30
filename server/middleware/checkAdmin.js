@@ -1,20 +1,25 @@
-import { User } from "../models/user.model.js";
+import { User } from "../models/user.model.js"; // Adjust the path as necessary
 
 export const checkAdmin = async (req, res, next) => {
   try {
-    console.log("User ID from token:", req.user.id); // Log the user ID from the token
+    // Ensure req.user is populated from your authentication middleware
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
-    // Fetch the user from the database
+    // Log the user ID and role for debugging
+    console.log("User ID from token:", req.user.id);
+    console.log("Authenticated User Role:", req.user.role);
+
+    // Fetch the user from the database to check the role
     const user = await User.findById(req.user.id);
-
-    // Check if the user exists
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
     }
 
-    // Check the user's role
+    // Check if the user's role is "admin"
     if (user.role !== "admin") {
       console.log("Access Denied: User is not an admin."); // Log denial of access
       return res
@@ -22,10 +27,10 @@ export const checkAdmin = async (req, res, next) => {
         .json({ success: false, message: "Admin access required" });
     }
 
-    // Proceed to the next middleware
+    // Proceed to the next middleware or route handler
     next();
-  } catch (err) {
-    console.error("Error in checkAdmin middleware:", err);
+  } catch (error) {
+    console.error("Error in checkAdmin middleware:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

@@ -7,6 +7,7 @@ import Search from "./pages/Search.jsx";
 import UpdateFiles from "./pages/UpdateFiles.jsx";
 import CreateUser from "./pages/CreateNewUser.jsx";
 import CreateAdmin from "./pages/CreateAdmin.jsx";
+import ManageUsers from "./pages/ManageUsers.jsx";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,7 +24,7 @@ function App() {
     if (storedIsLoggedIn) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
-      setRole(storedRole); 
+      setRole(storedRole);
     }
   }, []);
 
@@ -70,6 +71,20 @@ function App() {
         <Route
           path="/update-files"
           element={<UpdateFiles isLoggedIn={isLoggedIn} username={username} />}
+        />
+        <Route
+          path="/manageUsers"
+          element={
+            <ManageUsers
+              isLoggedIn={isLoggedIn} // Pass isLoggedIn to ManageUsers
+              username={username} // Pass username to ManageUsers
+              role={role} // Pass role to ManageUsers
+              setIsLoggedIn={setIsLoggedIn}
+              setUsername={setUsername}
+              onLogout={handleLogout}
+              setUserRole={setRole}
+            />
+          }
         />
       </Routes>
     </>

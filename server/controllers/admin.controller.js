@@ -4,60 +4,56 @@ import { generateTokenAndSendCookie } from "../utils/generateToken.js";
 
 // Function to create an admin
 export const createAdmin = async (req, res) => {
-  const { username, password } = req.body;
+    console.log("Request Body:", req.body); // Log the request body for debugging
+    const { username, password } = req.body;
 
-  // Validate input
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Please fill in all fields" });
-  }
-
-  if (password.length < 6) {
-    return res.status(400).json({
-      success: false,
-      message: "Password must be at least 6 characters",
-    });
-  }
-
-  try {
-    const existingAdmin = await User.findOne({ username });
-    if (existingAdmin) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Username already exists" });
+    // Validate input
+    if (!username || !password) {
+        return res.status(400).json({ success: false, message: "Please fill in all fields" });
     }
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Hashed Password:", hashedPassword); // Log hashed password
+    if (password.length < 6) {
+        return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
+    }
 
-    // Create a new admin user
-    const newAdmin = new User({
-      username,
-      password: hashedPassword,
-      role: "admin",
-    });
+    try {
+        // Check if the username already exists
+        const existingAdmin = await User.findOne({ username });
+        if (existingAdmin) {
+            return res.status(400).json({ success: false, message: "Username already exists" });
+        }
 
-    await newAdmin.save();
-    console.log("New Admin User Created:", newAdmin); // Log the new user details
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Hashed Password:", hashedPassword); // Log hashed password
 
-    // Optionally generate a token and send cookie
-    generateTokenAndSendCookie(res, newAdmin._id, "admin");
+        // Create a new admin user
+        const newAdmin = new User({
+            username,
+            password: hashedPassword,
+            role: "admin",
+        });
 
-    // Send success response with user data (without password)
-    const { password: _, ...userWithoutPassword } = newAdmin._doc;
-    res.status(201).json({ success: true, user: userWithoutPassword });
-  } catch (error) {
-    console.error("Error in createAdmin controller:", error.message);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
+        // Save the new admin to the database
+        await newAdmin.save();
+        console.log("New Admin User Created:", newAdmin); // Log the new user details
+
+        // Generate a token and send cookie
+        generateTokenAndSendCookie(res, newAdmin._id, "admin");
+
+        // Send success response without password
+        const { password: _, ...userWithoutPassword } = newAdmin._doc;
+        res.status(201).json({ success: true, user: userWithoutPassword });
+    } catch (error) {
+        console.error("Error in createAdmin controller:", error.message);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 };
 
 // Function to create a user
 export const createUser = async (req, res) => {
   // Ensure the requester is an admin
-  console.log("Authenticated User Role:", req.user.role); // Log the role for debugging
+  console.log("Authenticated User Role:", req.user.role);
   if (req.user.role !== "admin") {
     return res.status(403).json({ success: false, message: "Forbidden" });
   }
@@ -72,10 +68,12 @@ export const createUser = async (req, res) => {
   }
 
   if (password.length < 6) {
-    return res.status(400).json({
-      success: false,
-      message: "Password must be at least 6 characters",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
   }
 
   try {
@@ -86,18 +84,19 @@ export const createUser = async (req, res) => {
         .json({ success: false, message: "Username already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); // Hashing the password
-    console.log("Hashed Password for User:", hashedPassword); // Log hashed password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Hashed Password for User:", hashedPassword);
 
     // Create a new user with the specified role
     const newUser = new User({ username, password: hashedPassword, role });
     await newUser.save();
-    console.log("New User Created:", newUser); // Log the new user details
+    console.log("New User Created:", newUser);
 
-    // Optionally generate a token and send cookie if needed
-    generateTokenAndSendCookie(res, newUser._id);
+    // Optionally generate a token and send cookie if needed (often not needed for regular users)
+    // If you want to allow users to log in immediately, uncomment the next line
+    // generateTokenAndSendCookie(res, newUser._id, newUser.role);
 
-    // Send success response with user data (without password)
+    // Send success response without password
     const { password: _, ...userWithoutPassword } = newUser._doc;
     res.status(201).json({ success: true, user: userWithoutPassword });
   } catch (error) {

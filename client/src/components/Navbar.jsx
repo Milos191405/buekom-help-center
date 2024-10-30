@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import Logo from "../assets/bükom-logo.png";
 
 function Navbar({ isLoggedIn, onLogout, username, role }) {
-  console.log("Role in Navbar", role);
   const [nav, setNav] = useState(false);
   const navigate = useNavigate();
 
@@ -21,11 +20,9 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
     navigate("/");
   };
 
-  console.log("Role in Navbar", role);
-
   return (
     <nav
-      className="fixed top-0 w-full flex flex-col gap-5 items-center h-[200px] border-b-2 bottom-[#fa4915]  
+      className="fixed top-0 w-full flex flex-col gap-5 items-center  border-b-2 bottom-[#fa4915]  
       md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out"
     >
       <div className="flex justify-center items-center w-60 mt-2">
@@ -36,7 +33,7 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
       </div>
 
       {/* Desktop Menu */}
-      <ul className="flex lg:flex gap-2 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
+      <ul className="grid grid-cols-2 lg:flex gap-2 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
         {isLoggedIn && (
           <>
             <li className="px-4">
@@ -76,7 +73,19 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                         : "text-[#005873] hover:text-[#fa4915]"
                     }
                   >
-                    Create new user
+                    Create user
+                  </NavLink>
+                </li>
+                <li className="px-4">
+                  <NavLink
+                    to={`/manageUsers`}
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-[#fa4915]"
+                        : "text-[#005873] hover:text-[#fa4915]"
+                    }
+                  >
+                    Manage Users
                   </NavLink>
                 </li>
               </>
@@ -84,14 +93,6 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
           </>
         )}
       </ul>
-
-      {/* Display username and role */}
-      {isLoggedIn && (
-        <div className="text-gray-700">
-          <span>Welcome, {username}! </span>
-          <span>Role: {role}</span>
-        </div>
-      )}
 
       {/* Logout or Sign In/Up Buttons */}
       <ul className="flex">

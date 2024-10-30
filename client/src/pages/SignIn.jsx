@@ -26,21 +26,24 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
-        { username, password},
+        { username, password },
         { withCredentials: true }
       );
 
       if (response.data.success) {
         const { user } = response.data;
-        
-      console.log("user role from response", user.role)
+
+        console.log("User role from response", user.role); // Debug log
+
         // Set user state and localStorage values upon successful login
         setIsLoggedIn(true);
         setUsername(username);
         setUserRole(user.role); // Ensure the role is received from the server response
+
+        // Store role in localStorage correctly
         localStorage.setItem("username", username);
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("role", response.data.role); // Store role in localStorage
+        localStorage.setItem("role", user.role); // Store role from user object
 
         setMessage("Login successful");
         navigate("/"); // Redirect to homepage

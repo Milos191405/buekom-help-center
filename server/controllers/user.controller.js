@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 // Get User Details
 export const getUserDetails = async (req, res) => {
   try {
-    const userId = req.user._id; // Assuming you have the user ID from the verified token
+    const userId = req.user._id; 
 
     const user = await User.findById(userId).select("-password"); // Exclude password from response
     if (!user) {
