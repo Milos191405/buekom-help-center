@@ -1,6 +1,6 @@
 
 // auth.routes.js
-import express from "express";
+import express, { application } from "express";
 import { signup, login, logout } from "../controllers/auth.controller.js"; // Import auth controller functions
 import { authenticate } from "../middleware/authenticate.js";
 import { createAdmin, createUser } from "../controllers/admin.controller.js";
@@ -87,6 +87,18 @@ router.delete("/delete-user/:id", authenticate, async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
+
+router.get("/admin/existence", async (req, res) => {
+  try {
+    const admin = await User.findOne({ role: "admin" }); 
+    res.setHeader("Content-Type", "application/json");
+    res.json({ exists: !!admin });
+  } catch (error) {
+    console.error("Error checking for admin existence:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 
 export default router; // Export the router
