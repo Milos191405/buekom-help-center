@@ -106,12 +106,12 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
         ) : (
           <>
             <li className="flex gap-10">
-              <button
+              {/* <button
                 className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
                 onClick={handleSignUp}
               >
                 Create Admin
-              </button>
+              </button> */}
               <button
                 className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
                 onClick={handleSignIn}

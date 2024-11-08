@@ -65,7 +65,7 @@ useEffect(() => {
           <div>
             <h1>Make admin account to start</h1>
  <button
-                className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
+                className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] mx-auto"
                 onClick={handleSignUp}
               >
                 Create Admin
@@ -73,12 +73,10 @@ useEffect(() => {
 </div>        
         )}   
 
-        {isLoggedIn ? (
+        {isLoggedIn  && (
           <h1 className="text-xl ">
             Welcome <span className="text-orange-500">{username}</span>!
           </h1>
-        ) : (
-          <h1>Please log in or sign up.</h1>
         )}
       </div>
     </>
