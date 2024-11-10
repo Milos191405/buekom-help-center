@@ -186,8 +186,9 @@ function UpdateFiles({ isLoggedIn, username }) {
     : uploadedFiles;
 
   return (
-    <article className="mt-[200px] bg-gray-200 p-4">
+    <article className="mt-[250px] bg-gray-200 p-4">
       <div>
+        <h1 className="text-center font-bold text-xl mb-5">Upload Files</h1>
         <h2>Upload a Single File</h2>
         <input
           type="file"

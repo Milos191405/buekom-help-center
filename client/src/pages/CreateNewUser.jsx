@@ -51,10 +51,10 @@ function CreateUser() {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-center min-h-screen">
+    <div className="mt-[300px] ">
+      <div className="flex  justify-center">
         <div className="border p-4 rounded shadow-lg">
-          <h2 className="text-center mb-4">Create User</h2>
+          <h2 className="text-center mb-4 font-bold text-xl ">Create User</h2>
           <form onSubmit={handleSubmit} className="flex flex-col w-60">
             <label htmlFor="username" className="mb-1">
               Username
@@ -103,12 +103,12 @@ function CreateUser() {
           )}
         </div>
       </div>
-      <div>
+      {/* <div className="">
         <button className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]">
           See all users
         </button>
-      </div>
-    </>
+      </div> */}
+    </div>
   );
 
 

@@ -56,24 +56,32 @@ useEffect(() => {
               Marc and Sven knowledge base
             </p>
             {!isLoggedIn && isAdminExist && (
-              <p className="text-lg">Login to your account</p>
+              <div className="">
+                <p className="text-lg">Login to your account</p>
+                <button
+                  className="mt-4 border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
+                  onClick={handleSignIn}
+                >
+                  Sign In
+                </button>
+              </div>
             )}
           </article>
         </div>
 
-       {!isLoggedIn  && !isAdminExist &&(
+        {!isLoggedIn && !isAdminExist && (
           <div>
             <h1>Make admin account to start</h1>
- <button
-                className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] mx-auto"
-                onClick={handleSignUp}
-              >
-                Create Admin
-              </button>
-</div>        
-        )}   
+            <button
+              className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] mx-auto mt-4"
+              onClick={handleSignUp}
+            >
+              Create Admin
+            </button>
+          </div>
+        )}
 
-        {isLoggedIn  && (
+        {isLoggedIn && (
           <h1 className="text-xl ">
             Welcome <span className="text-orange-500">{username}</span>!
           </h1>

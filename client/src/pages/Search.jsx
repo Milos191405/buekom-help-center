@@ -78,9 +78,9 @@ function Search({ isLoggedIn, username }) {
   };
 
   return (
-    <div className="mt-[200px] w- border border-red-600 bg-gray-200">
+    <div className="mt-[250px] w-  bg-gray-200">
       <div className=" lg:max-w-[1400px] pt-[20px] mx-auto overflow-hidden items-center text-center">
-        <h2 className="text-2xl font-semibold mb-4">Search Page</h2>
+        <h2 className="text-xl font-semibold mb-4">Search Page</h2>
       </div>
 
       <div>

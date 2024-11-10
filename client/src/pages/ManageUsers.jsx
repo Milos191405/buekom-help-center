@@ -51,9 +51,9 @@ const ManageUsers = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="mt-[250px] text-center">
-      <h1 className="font-bold">Manage Users</h1>
-      <table className="w-[90%]  mt-20 mx-auto ">
+    <div className="mt-[280px] text-center">
+      <h1 className="font-bold text-xl">Manage Users</h1>
+      <table className="w-[90%]  mt-10 mx-auto ">
         <thead className="">
           <tr>
             <th className="w-30 text-left">Username</th>
@@ -68,7 +68,7 @@ const ManageUsers = () => {
               <td>
                 <button
                 onClick={() => handleDeleteUser(user._id)}
-                  className="border bg-red-500 text-white  ">
+                  className="border p-1 bg-red-500 text-white rounded-xl">
                   Delete user
                 </button>
               </td>

@@ -2,6 +2,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import Logo from "../assets/bükom-logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUserPlus,
+  faUsers,
+  faMagnifyingGlass,
+  faFilePen,
+} from "@fortawesome/free-solid-svg-icons";
+
 
 function Navbar({ isLoggedIn, onLogout, username, role }) {
   const [nav, setNav] = useState(false);
@@ -22,18 +30,18 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
 
   return (
     <nav
-      className="fixed top-0 w-full flex flex-col gap-5 items-center  border-b-2 bottom-[#fa4915]  
+      className="fixed top-0 w-full   items-center  border-b-2 bottom-[#fa4915]  
       md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out"
     >
-      <div className="flex justify-center items-center w-60 mt-2">
+      <div className="my-5 flex flex-col items-center ">
         {/* Logo */}
         <NavLink to="/" className="">
-          <img src={Logo} alt="Logo" className="w-[200px] xl:w-[250px] z-50" />
+          <img src={Logo} alt="Logo" className="w-[250px] xl:w-[250px] z-50 mb-4 " />
         </NavLink>
       </div>
 
       {/* Desktop Menu */}
-      <ul className="grid grid-cols-2 lg:flex gap-2 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
+      <ul className="flex lg:flex gap-5 mb-5 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
         {isLoggedIn && (
           <>
             <li className="px-4">
@@ -45,7 +53,9 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                     : "text-[#005873] hover:text-[#fa4915]"
                 }
               >
-                Search
+                <FontAwesomeIcon icon={faMagnifyingGlass} className="sm:hidden mr-2" />
+
+                <span className="hidden sm:inline">Search</span>
               </NavLink>
             </li>
 
@@ -61,7 +71,12 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                         : "text-[#005873] hover:text-[#fa4915]"
                     }
                   >
-                    Update Files
+                    <FontAwesomeIcon
+                      icon={faFilePen}
+                      className="sm:hidden mr-2"
+                    />
+
+                    <span className="hidden sm:inline">Update Files</span>
                   </NavLink>
                 </li>
                 <li className="px-4">
@@ -73,7 +88,12 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                         : "text-[#005873] hover:text-[#fa4915]"
                     }
                   >
-                    Create user
+                    <FontAwesomeIcon
+                      icon={faUserPlus}
+                      className="sm:hidden mr-2"
+                    />
+
+                    <span className="hidden sm:inline">Create user</span>
                   </NavLink>
                 </li>
                 <li className="px-4">
@@ -85,7 +105,12 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                         : "text-[#005873] hover:text-[#fa4915]"
                     }
                   >
-                    Manage Users
+                    <FontAwesomeIcon
+                      icon={faUsers}
+                      className="sm:hidden mr-2"
+                    />
+
+                    <span className="hidden sm:inline">Manage Users</span>
                   </NavLink>
                 </li>
               </>
@@ -95,7 +120,7 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
       </ul>
 
       {/* Logout or Sign In/Up Buttons */}
-      <ul className="flex">
+      <ul className="flex mb-2">
         {isLoggedIn ? (
           <button
             className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
@@ -112,12 +137,12 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
               >
                 Create Admin
               </button> */}
-              <button
+              {/* <button
                 className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
                 onClick={handleSignIn}
               >
                 Sign In
-              </button>
+              </button> */}
             </li>
           </>
         )}
