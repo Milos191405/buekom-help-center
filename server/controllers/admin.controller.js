@@ -59,7 +59,7 @@ export const createAdmin = async (req, res) => {
       return res.status(201).json({ success: true, user: userWithoutPassword });
     }
 
-    // If an admin exists, check if the request comes from an authenticated admin
+    //  admin exists, check authentication
     if (!req.user || req.user.role !== "admin") {
       return res
         .status(403)

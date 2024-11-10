@@ -1,6 +1,6 @@
 
 // auth.routes.js
-import express, { application } from "express";
+import express from "express";
 import { signup, login, logout } from "../controllers/auth.controller.js"; // Import auth controller functions
 import { authenticate } from "../middleware/authenticate.js";
 import { createAdmin, createUser } from "../controllers/admin.controller.js";
@@ -15,7 +15,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 // Admin creation route (Only authenticated users)
-router.post("/admin/create-admin", authenticate, createAdmin);
+router.post("/admin/create-admin", createAdmin);
 
 // User creation route (Only admins can create users)
 router.post("/admin/create-user", authenticate, checkAdmin, createUser);

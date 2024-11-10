@@ -1,5 +1,6 @@
 import express from "express";
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import { connectDB } from "./config/db.js"; // Import the connectDB function
 import cookieParser from "cookie-parser";
@@ -30,6 +31,7 @@ const startServer = async () => {
     // Define routes
     app.use("/api/auth", authRoutes); // Authentication routes
     app.use("/api/upload", uploadRoutes); // File upload routes
+    app.use("/api/admin", adminRoutes); // Admin routes (protected by JWT)
 
     // Start the server
     app.listen(PORT, () => {
