@@ -14,7 +14,7 @@ const fileSchema = new mongoose.Schema(
       required: true,
     },
     tags: {
-      type: [String], // Store tags as an array of strings
+      type: [{ String }], // Store tags as an array of strings
     },
   },
   {

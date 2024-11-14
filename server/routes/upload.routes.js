@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import File from "../models/File.js"; // Import the File model
+import File from "../models/File.js";
 
 const router = express.Router();
 
@@ -23,18 +23,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Endpoint for uploading multiple files
+// Endpoint for uploading multiple files with tags
 router.post("/", upload.array("files"), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ message: "No files uploaded." });
   }
 
+  const tags = req.body.tags ? req.body.tags.split(",") : []; // Assuming tags are passed as comma-separated values
+
   try {
     const fileDocs = req.files.map((file) => ({
       filename: file.filename,
       originalName: file.originalname,
+      tags: tags, // Store the tags for each file
     }));
-    await File.insertMany(fileDocs); // Save multiple files in MongoDB
+    await File.insertMany(fileDocs); // Save multiple files with tags in MongoDB
 
     res.status(200).json({
       message: "Files uploaded successfully.",
@@ -57,7 +60,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Endpoint to serve a file's content
+// Endpoint to retrieve a file's content
 router.get("/files/:filename", (req, res) => {
   const filePath = path.join(process.cwd(), "uploads", req.params.filename);
 
@@ -89,5 +92,7 @@ router.delete("/:filename", async (req, res) => {
     res.status(500).json({ message: "Error deleting file." });
   }
 });
+
+
 
 export default router;

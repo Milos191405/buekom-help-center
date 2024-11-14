@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import FolderView from "../components/states/FolderView";
 
 function UpdateFiles({ isLoggedIn, username }) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -12,6 +13,8 @@ function UpdateFiles({ isLoggedIn, username }) {
   const [allTags, setAllTags] = useState([]);
   const [deletingFile, setDeletingFile] = useState(null);
   const [selectedFileContent, setSelectedFileContent] = useState(null);
+  const[expandedFolders, setExpandedFolders] = useState({});
+  
 
   // Create refs for file input elements
   const singleFileInputRef = useRef(null);
@@ -32,10 +35,11 @@ function UpdateFiles({ isLoggedIn, username }) {
               `http://localhost:5000/api/upload/files/${file.filename}`
             );
             const content = contentResponse.data;
-
-            const tagLine = content.match(/^tags:\s*(.*)$/m);
+            const tagLine = content.match(/^tags:\s*(.*)$/m); // Extract tags from content
             if (tagLine) {
-              const tags = tagLine[1].split(",").map((tag) => tag.trim());
+              const tags = tagLine[1]
+                .split(",")
+                .map((tag) => tag.trim().replace(/^[-\s]+/, "")); // Clean up the tags
               tags.forEach((tag) => tagsSet.add(tag));
               file.tags = tags;
             } else {
@@ -163,7 +167,8 @@ function UpdateFiles({ isLoggedIn, username }) {
 
     setDeletingFile(fileName);
     try {
-      const response = await axios.delete(
+      const response = await axios.dArray(empty);
+elete(
         `http://localhost:5000/api/upload/${fileName}`
       );
 
@@ -185,84 +190,97 @@ function UpdateFiles({ isLoggedIn, username }) {
     ? uploadedFiles.filter((file) => file.tags && file.tags.includes(tagFilter))
     : uploadedFiles;
 
+  //making dir basic on tags
+
+  const tagDir = {};
+  filteredFiles.forEach((file) => {
+    file.tags.forEach((tag) => {
+      if (!tagDir[tag]) {
+        tagDir[tag] = [];
+      }
+      tagDir[tag].push(file);
+    });
+  });
+
+  const toggleFolder = (tag) => {
+    setExpandedFolders((prevState) => ({
+      ...prevState,
+      [tag]: !prevState[tag],
+    }));
+  };
+
+
   return (
     <article className="mt-[250px] bg-gray-200 p-4">
-      <div>
-        <h1 className="text-center font-bold text-xl mb-5">Upload Files</h1>
-        <h2>Upload a Single File</h2>
-        <input
-          type="file"
-          id="file-upload"
-          ref={singleFileInputRef} // Attach ref here
-          onChange={handleSingleFileChange}
-          className="flex flex-col mb-4 border"
-        />
-        {fileExistingMessage && (
-          <div className="text-red-500 mb-4">{fileExistingMessage}</div>
-        )}
-      </div>
+      <h1 className="text-center font-bold text-xl mb-5">Upload Files</h1>
 
-      <div>
-        <h2>Upload a Folder</h2>
-        <input
-          type="file"
-          id="folder-upload"
-          ref={folderUploadInputRef} // Attach ref here
-          onChange={handleFolderChange}
-          className="flex flex-col mb-4 border"
-          webkitdirectory=""
-          multiple
-        />
-        {fileExistingMessage && (
-          <div className="text-red-500 mb-4">{fileExistingMessage}</div>
-        )}
-      </div>
+   
+       
+        <div className="lg:flex justify-center items-center lg:w-[90%] lg:mx-auto">
+          <div>
+            <h2>Upload a Single File</h2>
+            <input
+              type="file"
+              id="file-upload"
+              ref={singleFileInputRef} // Attach ref here
+              onChange={handleSingleFileChange}
+              className="flex flex-col mb-4 border"
+            />
+            {fileExistingMessage && (
+              <div className="text-red-500 mb-4">{fileExistingMessage}</div>
+            )}
+          </div>
 
-      <div className="filter-container flex items-center gap-4 mb-4">
-        <label htmlFor="tagFilter" className="font-semibold">
-          Filter by tag:
-        </label>
-        <select
-          id="tagFilter"
-          value={tagFilter}
-          onChange={(e) => setTagFilter(e.target.value)}
-          className="border border-gray-300 p-2"
-        >
-          <option value="">All</option>
-          {allTags.map((tag, index) => (
-            <option key={index} value={tag}>
-              {tag}
-            </option>
-          ))}
-        </select>
-      </div>
+          <div>
+            <h2>Upload a Folder</h2>
+            <input
+              type="file"
+              id="folder-upload"
+              ref={folderUploadInputRef} // Attach ref here
+              onChange={handleFolderChange}
+              className="flex flex-col mb-4 "
+              webkitdirectory=""
+              multiple
+            />
+            {fileExistingMessage && (
+              <div className="text-red-500 mb-4">{fileExistingMessage}</div>
+            )}
+          </div>
 
-      {loading ? (
-        <p>Loading files...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <ul className="space-y-2">
-          {filteredFiles.map((file) => (
-            <li key={file.filename}>
-              <button
-                className="text-blue-500 hover:underline"
-                onClick={() => handleFileClick(file.filename)}
-              >
-                {file.originalName}
-              </button>
-              <button
-                className="ml-4 text-red-500 hover:underline"
-                onClick={() => handleFileDelete(file.filename)}
-                disabled={deletingFile === file.filename}
-              >
-                {deletingFile === file.filename ? "Deleting..." : "Delete"}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+          <div className="filter-container flex items-center">
+            <label htmlFor="tagFilter" className="font-semibold">
+              Filter by tag:
+            </label>
+          </div>
 
+          <select
+            id="tagFilter"
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+            className="border border-gray-300 p-2 "
+          >
+            <option value="">All</option>
+            {allTags.map((tag, index) => (
+              <option key={index} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </div>
+
+      <h2 className="text-center font-bold text-xl mt-8">Uploaded Files</h2>
+
+      {/* Folder view */}
+      <FolderView
+        tagDir={tagDir}
+        handleFileClick={handleFileClick}
+        handleFileDelete={handleFileDelete}
+        deletingFile={deletingFile}
+        toggleFolder={toggleFolder} // Pass the toggleFolder function to FolderView
+        expandedFolders={expandedFolders} // Pass expandedFolders to FolderView
+      />
+
+      {/* on click open file  */}
       {selectedFileContent && (
         <div className="mt-8 bg-white p-4 rounded-md shadow-md">
           <h3 className="text-xl font-semibold mb-2">File Content</h3>
