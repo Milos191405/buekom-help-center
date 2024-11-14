@@ -6,6 +6,20 @@ import File from "../models/File.js";
 
 const router = express.Router();
 
+// Helper function to extract tags from Markdown content
+const extractTagsFromMarkdown = (content) => {
+  const tagPattern = /tags:\s*([\s\S]*?)\n\n/; // Match tags section
+  const match = content.match(tagPattern);
+
+  if (match && match[1]) {
+    return match[1]
+      .split("\n")
+      .map((tag) => tag.trim().replace(/^-\s*/, "")) // Remove the leading '-'
+      .filter((tag) => tag); // Remove any empty strings
+  }
+  return []; // Return empty array if no tags found
+};
+
 // Configure Multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -23,33 +37,48 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Endpoint for uploading multiple files with tags
+// Endpoint for uploading multiple files with tags extracted from the .md file
 router.post("/", upload.array("files"), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ message: "No files uploaded." });
   }
 
-  const tags = req.body.tags ? req.body.tags.split(",") : []; // Assuming tags are passed as comma-separated values
-
   try {
-    const fileDocs = req.files.map((file) => ({
-      filename: file.filename,
-      originalName: file.originalname,
-      tags: tags, // Store the tags for each file
-    }));
-    await File.insertMany(fileDocs); // Save multiple files with tags in MongoDB
+    // Process each uploaded file
+    for (let file of req.files) {
+      const filePath = path.join(process.cwd(), "uploads", file.filename);
 
+      // Read the file content to extract tags
+      const data = fs.readFileSync(filePath, "utf8");
+
+      // Extract tags from the .md file content
+      const tags = extractTagsFromMarkdown(data);
+
+      // Create a new file entry with tags and metadata
+      const newFile = new File({
+        filename: file.filename,
+        originalName: file.originalname,
+        tags: tags, // Store the extracted tags
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      // Save the file metadata in MongoDB
+      await newFile.save();
+    }
+
+    // Return a success response with the file names
     res.status(200).json({
       message: "Files uploaded successfully.",
       files: req.files.map((file) => file.filename),
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error saving file metadata." });
+    res.status(500).json({ message: "Error processing files." });
   }
 });
 
-// Endpoint to retrieve all uploaded files
+// Endpoint to retrieve all uploaded files with their tags
 router.get("/", async (req, res) => {
   try {
     const files = await File.find();
@@ -71,7 +100,7 @@ router.get("/files/:filename", (req, res) => {
   }
 });
 
-// Endpoint to delete a file
+// Endpoint to delete a file and its metadata
 router.delete("/:filename", async (req, res) => {
   const filePath = path.join(process.cwd(), "uploads", req.params.filename);
 
@@ -80,7 +109,10 @@ router.delete("/:filename", async (req, res) => {
   }
 
   try {
+    // Delete the file from the filesystem
     fs.unlinkSync(filePath);
+
+    // Delete the file metadata from MongoDB
     const result = await File.deleteOne({ filename: req.params.filename });
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: "File metadata not found." });
@@ -92,7 +124,5 @@ router.delete("/:filename", async (req, res) => {
     res.status(500).json({ message: "Error deleting file." });
   }
 });
-
-
 
 export default router;

@@ -160,30 +160,34 @@ function UpdateFiles({ isLoggedIn, username }) {
   };
 
   // Delete a file
-  const handleFileDelete = async (fileName) => {
-    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-      return;
-    }
+ const handleFileDelete = async (fileName) => {
+   // Confirm file deletion
+   if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+     return; // If the user cancels, return early
+   }
 
-    setDeletingFile(fileName);
-    try {
-      const response = await axios.dArray(empty);
-elete(
-        `http://localhost:5000/api/upload/${fileName}`
-      );
+   setDeletingFile(fileName); // Set the state indicating the file is being deleted
+   try {
+     // Send DELETE request to the server to delete the file
+     const response = await axios.delete(
+       `http://localhost:5000/api/upload/${fileName}`
+     );
 
-      if (response.status === 200) {
-        setUploadedFiles((prevFiles) =>
-          prevFiles.filter((file) => file.filename !== fileName)
-        );
-      }
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      setError("Failed to delete file.");
-    } finally {
-      setDeletingFile(null);
-    }
-  };
+     // If the response is successful (status 200), remove the file from the state
+     if (response.status === 200) {
+       setUploadedFiles(
+         (prevFiles) => prevFiles.filter((file) => file.filename !== fileName) // Remove deleted file from the list
+       );
+     }
+   } catch (error) {
+     // Handle any errors that occur during the delete request
+     console.error("Error deleting file:", error);
+     setError("Failed to delete file.");
+   } finally {
+     setDeletingFile(null); // Reset the deleting state, regardless of success or failure
+   }
+ };
+
 
   // Filter files based on tags
   const filteredFiles = tagFilter
