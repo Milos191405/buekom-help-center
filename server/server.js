@@ -15,7 +15,13 @@ const app = express();
 const PORT = process.env.PORT || 5000; // Set default port if ENV_VARS is not set
 
 // Middleware
-app.use(cors({ origin:process.env.CORS_ORIGIN || "http://localhost:5173", credentials: true })); // Allow CORS from the frontend
+app.use(
+  cors({
+    origin:
+      process.env.CORS_ORIGIN || "https://buekom-help-center.onrender.com ",
+    credentials: true,
+  })
+); // Allow CORS from the frontend
 app.use(express.json());
 app.use(cookieParser());
 
