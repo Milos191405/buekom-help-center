@@ -11,7 +11,7 @@ const ManageUsers = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/auth/users",
+          "https://buekom-help-center-server.onrender.com/api/auth/users",
           { withCredentials: true }
         );
         setUsers(response.data.users);
@@ -34,7 +34,7 @@ const ManageUsers = () => {
 
    try {
      await axios.delete(
-       `http://localhost:5000/api/auth/delete-user/${userId}`,
+       `https://buekom-help-center-server.onrender.com/api/auth/delete-user/${userId}`,
        {
          withCredentials: true,
        }

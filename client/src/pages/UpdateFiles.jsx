@@ -24,7 +24,9 @@ function UpdateFiles({ isLoggedIn, username, activeMenu}) {
   const fetchUploadedFiles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/upload");
+      const response = await axios.get(
+        "https://buekom-help-center-server.onrender.com/api/upload"
+      );
       const files = response.data.files;
 
       const tagsSet = new Set();
@@ -32,7 +34,7 @@ function UpdateFiles({ isLoggedIn, username, activeMenu}) {
         files.map(async (file) => {
           try {
             const contentResponse = await axios.get(
-              `http://localhost:5000/api/upload/files/${file.filename}`
+              `https://buekom-help-center-server.onrender.com/api/upload/files/${file.filename}`
             );
             const content = contentResponse.data;
             const tagLine = content.match(/^tags:\s*(.*)$/m); // Extract tags from content
@@ -130,9 +132,13 @@ function UpdateFiles({ isLoggedIn, username, activeMenu}) {
   // Upload files to the server
   const handleFileUpload = async (formData) => {
     try {
-      await axios.post("http://localhost:5000/api/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post(
+        "https://buekom-help-center-server.onrender.com/api/upload",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       fetchUploadedFiles();
       setFileExistingMessage(null);
 
@@ -149,7 +155,7 @@ function UpdateFiles({ isLoggedIn, username, activeMenu}) {
   const handleFileClick = async (fileName) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/upload/files/${fileName}`
+        `https://buekom-help-center-server.onrender.com/api/upload/files/${fileName}`
       );
       const content = response.data;
       setSelectedFileContent(content);
@@ -170,7 +176,7 @@ function UpdateFiles({ isLoggedIn, username, activeMenu}) {
    try {
      // Send DELETE request to the server to delete the file
      const response = await axios.delete(
-       `http://localhost:5000/api/upload/${fileName}`
+       `https://buekom-help-center-server.onrender.com/api/upload/${fileName}`
      );
 
      // If the response is successful (status 200), remove the file from the state
