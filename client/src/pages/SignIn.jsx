@@ -58,37 +58,39 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="border p-4 rounded shadow-lg">
-        <h2 className="text-center mb-4">Sign In</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col w-60">
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsernameLocal(e.target.value)}
-            className="border p-2 mb-2 rounded"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 mb-4 rounded"
-          />
-          <button
-            type="submit"
-            className="border p-2 rounded text-white bg-[#005873] hover:bg-[#fa4915]"
-            disabled={loading || !username || !password} // Disable button if loading or fields are empty
-          >
-            {loading ? "Logging In ..." : "Log In"}
-          </button>
-        </form>
-        {message && (
-          <div className="mt-4 text-center text-red-500">{message}</div>
-        )}
+    <article className="text-center mt-[100px] min-h-[calc(100vh-100px)] bg-gray-200 flex items-center justify-center">
+      <div className="flex items-center justify-center  bg-gray-200">
+        <div className="border p-4 rounded shadow-xl bg-gray-100">
+          <h2 className="text-center mb-4">Sign In</h2>
+          <form onSubmit={handleSubmit} className="flex flex-col w-60">
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsernameLocal(e.target.value)}
+              className="border p-2 mb-2 rounded"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border p-2 mb-4 rounded"
+            />
+            <button
+              type="submit"
+              className="border p-2 rounded text-white bg-[#005873] hover:bg-[#fa4915]"
+              disabled={loading || !username || !password} // Disable button if loading or fields are empty
+            >
+              {loading ? "Logging In ..." : "Log In"}
+            </button>
+          </form>
+          {message && (
+            <div className="mt-4 text-center text-red-500">{message}</div>
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 

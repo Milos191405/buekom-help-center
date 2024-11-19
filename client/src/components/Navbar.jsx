@@ -30,20 +30,23 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
 
   return (
     <nav
-      className="fixed top-0 w-full   items-center  border-b-2 bottom-[#fa4915]  
-      md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out"
+      className="fixed left-0 top-0 w-full items-center min-h-60 
+      md:px-6 text-gray-700 z-50 transition-all duration-300 ease-in-out mx-auto  "
     >
-      <div className="my-5 flex flex-col items-center ">
+      <div className=" flex flex-col items-center justify-center ">
         {/* Logo */}
         <NavLink to="/" className="">
-          <img src={Logo} alt="Logo" className="w-[250px] xl:w-[250px] z-50 mb-4 " />
+          <img src={Logo} alt="Logo" className="w-[250px] xl:w-[300px] z-50 p-2 " />
         </NavLink>
       </div>
 
       {/* Desktop Menu */}
-      <ul className="flex lg:flex gap-5 mb-5 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
+      <ul className="flex  lg:flex gap-5 mb-5 text-lg xl:text-lg 2xl:text-xl lg:gap-3">
+
+
+
         {isLoggedIn && (
-          <>
+          <div className="flex mx-auto gap-5 mt-5 ">
             <li className="px-4">
               <NavLink
                 to="/search"
@@ -115,15 +118,15 @@ function Navbar({ isLoggedIn, onLogout, username, role }) {
                 </li>
               </>
             )}
-          </>
+          </div>
         )}
       </ul>
 
       {/* Logout or Sign In/Up Buttons */}
-      <ul className="flex mb-2">
+      <ul className="flex mb-2 ">
         {isLoggedIn ? (
           <button
-            className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]"
+            className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] mx-auto mt-2"
             onClick={handleLogout}
           >
             Logout

@@ -47,10 +47,17 @@ useEffect(() => {
   // };
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-screen ">
-        <div className="flex items-center justify-center  ">
-          <article className="text-center">
+    <article className="bg-gray-200">
+      <div
+        className={`flex flex-col items-center justify-center  
+    ${
+      isLoggedIn
+        ? "mt-[260px] h-[calc(100vh-260px)]"
+        : "mt-[100px] h-[calc(100vh-100px)]"
+    }`}
+      >
+        <div className=" ">
+          <article className="text-center ">
             <h1 className="text-4xl font-bold mb-4">büKOM</h1>
             <p className="text-2xl font-bold mb-5">
               Marc and Sven knowledge base
@@ -70,7 +77,7 @@ useEffect(() => {
         </div>
 
         {!isLoggedIn && !isAdminExist && (
-          <div>
+          <div className="">
             <h1>Make admin account to start</h1>
             <button
               className="flex border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915] mx-auto mt-4"
@@ -87,7 +94,7 @@ useEffect(() => {
           </h1>
         )}
       </div>
-    </>
+    </article>
   );
 }
 

@@ -51,32 +51,35 @@ const ManageUsers = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="mt-[280px] text-center">
-      <h1 className="font-bold text-xl">Manage Users</h1>
-      <table className="w-[90%]  mt-10 mx-auto ">
-        <thead className="">
-          <tr>
-            <th className="w-30 text-left">Username</th>
-            <th className="w-30 text-left">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td className="w-30 text-left">{user.username}</td>
-              <td className="w-30 text-left">{user.role || "User"}</td>
-              <td>
-                <button
-                onClick={() => handleDeleteUser(user._id)}
-                  className="border p-1 bg-red-500 text-white rounded-xl">
-                  Delete user
-                </button>
-              </td>
+    <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 ">
+      <div className="lg:max-w-[1000px] xl:max-w-[1400px] lg:mx-auto lg:pt-4">
+        <h1 className="font-bold text-xl">Manage Users</h1>
+        <table className="w-[90%]  mt-10 mx-auto ">
+          <thead className="">
+            <tr>
+              <th className="w-30 text-left">Username</th>
+              <th className="w-30 text-left">Role</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id}>
+                <td className="w-30 text-left">{user.username}</td>
+                <td className="w-30 text-left">{user.role || "User"}</td>
+                <td>
+                  <button
+                    onClick={() => handleDeleteUser(user._id)}
+                    className="border p-1 bg-red-500 text-white rounded-xl"
+                  >
+                    Delete user
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </article>
   );
 };
 

@@ -19,7 +19,7 @@ const fileSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manage createdAt and updatedAt timestamps
+    timestamps: true, 
   }
 );
 

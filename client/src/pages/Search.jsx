@@ -1,27 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import FolderView from "../components/states/FolderView";
 
 function Search({ isLoggedIn, username }) {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]); // Initialize uploaded files state
+  const [loading, setLoading] = useState(false); // Initialize loading state
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [file, setFile] = useState(null);
+  const [tagFilter, setTagFilter] = useState("");
+  const [allTags, setAllTags] = useState([]);
   const [selectedFileContent, setSelectedFileContent] = useState(null);
-  const [fileExistingMessage, setFileExistingMessage] = useState(null);
+  const [expandedFolders, setExpandedFolders] = useState({});
 
-  // Fetch uploaded files
+  // Fetch uploaded files from the server
   const fetchUploadedFiles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/upload"); // Ensure correct endpoint
-      setUploadedFiles(response.data.files); // Update uploaded files with the response
-      setLoading(false); // Set loading to false after fetching
+      const response = await axios.get("http://localhost:5000/api/upload");
+      const files = response.data.files;
+
+      const tagsSet = new Set();
+      const enrichedFiles = await Promise.all(
+        files.map(async (file) => {
+          try {
+            const contentResponse = await axios.get(
+              `http://localhost:5000/api/upload/files/${file.filename}`
+            );
+            const content = contentResponse.data;
+            const tagLine = content.match(/^tags:\s*(.*)$/m); // Extract tags from content
+            if (tagLine) {
+              const tags = tagLine[1]
+                .split(",")
+                .map((tag) => tag.trim().replace(/^[-\s]+/, "")); // Clean up the tags
+              tags.forEach((tag) => tagsSet.add(tag));
+              file.tags = tags;
+            } else {
+              file.tags = [];
+            }
+
+            return file;
+          } catch (error) {
+            console.error(
+              `Error fetching content for ${file.filename}:`,
+              error
+            );
+            file.tags = [];
+            return file;
+          }
+        })
+      );
+
+      setUploadedFiles(enrichedFiles);
+      setAllTags(Array.from(tagsSet));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching uploaded files:", error);
       setError("Failed to load files.");
-      setLoading(false); // Ensure loading is set to false on error
+      setLoading(false);
     }
   };
 
@@ -29,126 +65,89 @@ function Search({ isLoggedIn, username }) {
     fetchUploadedFiles();
   }, []);
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-    setFileExistingMessage(null);
-  };
-
-  const handleFileUpload = async (event) => {
-    event.preventDefault();
-    if (!file) return; 
-
-    const fileExist = uploadedFiles.some(
-      (uploadedFile) => uploadedFile.originalName === file.name
-    );
-
-    if (fileExist) { 
-      setFileExistingMessage("File already exists.");
-      return
-    }
-
-    const formData = new FormData();
-    formData.append("file", file); // Append the file to the form data
-
-    try {
-      await axios.post("http://localhost:5000/api/upload", formData);
-      fetchUploadedFiles(); // Re-fetch files after upload
-      setFile(null); // Reset file input
-      setFileExistingMessage(null);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      setError("Failed to upload file.");
-    }
-  };
-
-  const handleFileDelete = async (fileName) => {
-   
-  };
-
+  // Fetch file content when clicked
   const handleFileClick = async (fileName) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/uploads/${fileName}`
+        `http://localhost:5000/api/upload/files/${fileName}`
       );
-      setSelectedFileContent(response.data); // Set the content of the file
+      const content = response.data;
+      setSelectedFileContent(content);
     } catch (error) {
       console.error("Error fetching the file:", error);
       setError("Failed to load file content.");
     }
   };
 
+  // Filter files based on tags
+  const filteredFiles = tagFilter
+    ? uploadedFiles.filter((file) => file.tags && file.tags.includes(tagFilter))
+    : uploadedFiles;
+
+  // Making dir based on tags
+  const tagDir = {};
+  filteredFiles.forEach((file) => {
+    file.tags.forEach((tag) => {
+      if (!tagDir[tag]) {
+        tagDir[tag] = [];
+      }
+      tagDir[tag].push(file);
+    });
+  });
+
+  const toggleFolder = (tag) => {
+    setExpandedFolders((prevState) => ({
+      ...prevState,
+      [tag]: !prevState[tag],
+    }));
+  };
+
   return (
-    <div className="mt-[250px] w-  bg-gray-200">
-      <div className=" lg:max-w-[1400px] pt-[20px] mx-auto overflow-hidden items-center text-center">
-        <h2 className="text-xl font-semibold mb-4">Search Page</h2>
-      </div>
+    <article className="mt-[260px] bg-gray-200 min-h-[calc(100vh-260px)] p-2 items-center    ">
+      <div className="lg:max-w-[1000px] xl:max-w-[1400px] lg:mx-auto lg:pt-4">
+        <h1 className="text-center font-bold text-xl mb-5">Search Files</h1>
+        <div className=" flex flex-col justify-center items-center w-3/4 md:w-1/2 lg:w-1/3 lg:pb-5 mx-auto">
+          <div className="filter-container  w-3/4  ">
+            <label htmlFor="tagFilter" className="font-semibold text-left ">
+              Filter by tag:
+            </label>
+          </div>
 
-      <div>
-        <form action="search " className="flex flex-col items-center mx-auto   w-3/4">
-          <input type="text" className=" border-[#005873] mb-3" />
-          <button className=" border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]">
-            Search
-          </button>
-        </form>
-      </div>
+          <select
+            id="tagFilter"
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+            className="border border-gray-300 p-2 w-3/4"
+          >
+            <option value="">All</option>
+            {allTags.map((tag, index) => (
+              <option key={index} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className="w-full">
-        {loading ? (
-          <p>Loading uploaded files...</p> // Loading message
-        ) : error ? (
-          <p>{error}</p> // Display error message
-        ) : (
-          <ul>
-            {uploadedFiles
-              .slice()
-              .sort((a, b) => a.originalName.localeCompare(b.originalName))
-              .map((uploadedFile, index) => (
-                <li
-                  key={index}
-                  className="cursor-pointer flex items-center justify-between border p-2"
-                >
-                  <span
-                    onClick={() => handleFileClick(uploadedFile.filename)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {uploadedFile.originalName}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        )}
-      </div>
+        {/* Folder view */}
+        <FolderView
+          tagDir={tagDir}
+          handleFileClick={handleFileClick}
+          toggleFolder={toggleFolder}
+          expandedFolders={expandedFolders}
+        />
 
-      <div>
+        {/* Display file content when clicked */}
         {selectedFileContent && (
-          <div className="mt-6 mx-auto w-full max-w-[90%] md:max-w-[70%] lg:max-w-[60%]">
-            <h3 className="text-xl font-semibold mb-2">File Content</h3>
-            <div className="border p-4 bg-gray-100 overflow-x-auto">
-              <ReactMarkdown
-                children={selectedFileContent}
-                className="prose"
-                components={{
-                  pre: ({ node, ...props }) => (
-                    <pre
-                      {...props}
-                      className="whitespace-pre-wrap break-words"
-                    />
-                  ),
-                  code: ({ node, inline, ...props }) => (
-                    <code
-                      {...props}
-                      className={`whitespace-pre-wrap break-words ${
-                        inline ? "" : "block overflow-x-auto"
-                      }`}
-                    />
-                  ),
-                }}
-              />
-            </div>
+          <div className="mt-8 bg-white p-4 rounded-md shadow-md">
+            <ReactMarkdown children={selectedFileContent} className="prose" />
           </div>
         )}
+
+        {/* Loading and error handling */}
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
       </div>
-    </div>
+    </article>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import SignIn from "./pages/SignIn.jsx";
@@ -13,13 +13,13 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
+  const [activeMenu, setActiveMenu] = useState("home");
+  const location = useLocation(); 
 
   useEffect(() => {
     const storedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const storedUsername = localStorage.getItem("username");
     const storedRole = localStorage.getItem("role");
-
-    console.log("Stored role in localStorage", storedRole);
 
     if (storedIsLoggedIn) {
       setIsLoggedIn(true);
@@ -37,13 +37,28 @@ function App() {
     setRole("");
   };
 
+  useEffect(() => {
+    
+    const path = location.pathname;
+    if (path === "/update-files") {
+      setActiveMenu("update-files");
+    } else if (path === "/search") {
+      setActiveMenu("search");
+    } else if (path === "/manageUsers") {
+      setActiveMenu("manage-users");
+    } else {
+      setActiveMenu("home"); 
+    }
+  }, [location.pathname]); 
+
   return (
     <>
       <Navbar
         isLoggedIn={isLoggedIn}
         username={username}
         onLogout={handleLogout}
-        role={role} // Pass the role to Navbar
+        role={role}
+        activeMenu={activeMenu} // Pass activeMenu to Navbar
       />
       <Routes>
         <Route
@@ -58,7 +73,7 @@ function App() {
             <SignIn
               setIsLoggedIn={setIsLoggedIn}
               setUsername={setUsername}
-              setUserRole={setRole} // Pass the function to set the role
+              setUserRole={setRole}
             />
           }
         />
@@ -70,15 +85,21 @@ function App() {
         />
         <Route
           path="/update-files"
-          element={<UpdateFiles isLoggedIn={isLoggedIn} username={username} />}
+          element={
+            <UpdateFiles
+              isLoggedIn={isLoggedIn}
+              username={username}
+              activeMenu={activeMenu} 
+            />
+          }
         />
         <Route
           path="/manageUsers"
           element={
             <ManageUsers
-              isLoggedIn={isLoggedIn} // Pass isLoggedIn to ManageUsers
-              username={username} // Pass username to ManageUsers
-              role={role} // Pass role to ManageUsers
+              isLoggedIn={isLoggedIn}
+              username={username}
+              role={role}
               setIsLoggedIn={setIsLoggedIn}
               setUsername={setUsername}
               onLogout={handleLogout}

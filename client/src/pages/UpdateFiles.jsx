@@ -4,7 +4,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import FolderView from "../components/states/FolderView";
 
-function UpdateFiles({ isLoggedIn, username }) {
+function UpdateFiles({ isLoggedIn, username, activeMenu}) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ function UpdateFiles({ isLoggedIn, username }) {
   const [deletingFile, setDeletingFile] = useState(null);
   const [selectedFileContent, setSelectedFileContent] = useState(null);
   const[expandedFolders, setExpandedFolders] = useState({});
-  
+
 
   // Create refs for file input elements
   const singleFileInputRef = useRef(null);
@@ -215,82 +215,84 @@ function UpdateFiles({ isLoggedIn, username }) {
 
 
   return (
-    <article className="mt-[250px] bg-gray-200 p-4">
-      <h1 className="text-center font-bold text-xl mb-5">Upload Files</h1>
+    <article className="mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 p-4 ">
+      <div className="lg:max-w-[1000px] xl:max-w-[1400px] lg:mx-auto lg:pt-4">
+        <h1 className="text-center font-bold text-xl mb-5">Upload Files</h1>
 
-   
-       
-        <div className="lg:flex justify-center items-center lg:w-[90%] lg:mx-auto">
-          <div>
-            <h2>Upload a Single File</h2>
-            <input
-              type="file"
-              id="file-upload"
-              ref={singleFileInputRef} // Attach ref here
-              onChange={handleSingleFileChange}
-              className="flex flex-col mb-4 border"
-            />
-            {fileExistingMessage && (
-              <div className="text-red-500 mb-4">{fileExistingMessage}</div>
-            )}
+        <div className="justify-center items-center lg:grid lg:grid-cols-3">
+          <div className="md:flex md:space-x-4 lg:col-span-2">
+            <div className="md:w-1/2 lg:w-full">
+              <h2 className="font-bold">Upload a Single File</h2>
+              <input
+                type="file"
+                id="file-upload"
+                ref={singleFileInputRef}
+                onChange={handleSingleFileChange}
+                className="mb-4 border w-full"
+              />
+              {fileExistingMessage && (
+                <div className="text-red-500 mb-4">{fileExistingMessage}</div>
+              )}
+            </div>
+
+            <div className="md:w-1/2 lg:w-full">
+              <h2 className="font-bold">Upload a Folder</h2>
+              <input
+                type="file"
+                id="folder-upload"
+                ref={folderUploadInputRef}
+                onChange={handleFolderChange}
+                className="mb-4 border w-full"
+                webkitdirectory=""
+                multiple
+              />
+              {fileExistingMessage && (
+                <div className="text-red-500 mb-4">{fileExistingMessage}</div>
+              )}
+            </div>
           </div>
 
-          <div>
-            <h2>Upload a Folder</h2>
-            <input
-              type="file"
-              id="folder-upload"
-              ref={folderUploadInputRef} // Attach ref here
-              onChange={handleFolderChange}
-              className="flex flex-col mb-4 "
-              webkitdirectory=""
-              multiple
-            />
-            {fileExistingMessage && (
-              <div className="text-red-500 mb-4">{fileExistingMessage}</div>
-            )}
-          </div>
-
-          <div className="filter-container flex items-center">
+          <div className="filter-container flex flex-col md:w-1/2 lg:w-full mx-auto items-left">
             <label htmlFor="tagFilter" className="font-semibold">
               Filter by tag:
             </label>
+            <select
+              id="tagFilter"
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="border border-gray-300 p-3 w-full md:w-3/4"
+            >
+              <option value="">All</option>
+              {allTags.map((tag, index) => (
+                <option key={index} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
           </div>
-
-          <select
-            id="tagFilter"
-            value={tagFilter}
-            onChange={(e) => setTagFilter(e.target.value)}
-            className="border border-gray-300 p-2 "
-          >
-            <option value="">All</option>
-            {allTags.map((tag, index) => (
-              <option key={index} value={tag}>
-                {tag}
-              </option>
-            ))}
-          </select>
         </div>
 
-      <h2 className="text-center font-bold text-xl mt-8">Uploaded Files</h2>
+        <h2 className="text-center font-bold text-xl mt-8">Uploaded Files</h2>
 
-      {/* Folder view */}
-      <FolderView
-        tagDir={tagDir}
-        handleFileClick={handleFileClick}
-        handleFileDelete={handleFileDelete}
-        deletingFile={deletingFile}
-        toggleFolder={toggleFolder} // Pass the toggleFolder function to FolderView
-        expandedFolders={expandedFolders} // Pass expandedFolders to FolderView
-      />
+        {/* Folder view */}
+        <FolderView
+          tagDir={tagDir}
+          handleFileClick={handleFileClick}
+          handleFileDelete={handleFileDelete}
+          deletingFile={deletingFile}
+          toggleFolder={toggleFolder}
+          expandedFolders={expandedFolders}
+          activeMenu={activeMenu}
+        />
 
-      {/* on click open file  */}
-      {selectedFileContent && (
-        <div className="mt-8 bg-white p-4 rounded-md shadow-md">
-          <h3 className="text-xl font-semibold mb-2">File Content</h3>
-          <ReactMarkdown children={selectedFileContent} className="prose" />
-        </div>
-      )}
+        {/* on click open file  */}
+        {selectedFileContent && (
+          <div className="mt-8 bg-white p-4 rounded-md shadow-md">
+            <h3 className="text-xl font-semibold mb-2">File Content</h3>
+            <ReactMarkdown children={selectedFileContent} className="prose" />
+          </div>
+        )}
+      </div>
     </article>
   );
 }

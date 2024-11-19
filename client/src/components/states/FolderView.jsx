@@ -1,4 +1,5 @@
-import { useState } from "react";
+import  { useState} from "react";
+import { format } from "date-fns";
 
 function FolderView({
   tagDir,
@@ -7,11 +8,18 @@ function FolderView({
   deletingFile,
   toggleFolder,
   expandedFolders,
+  activeMenu,
 }) {
+
+
+
+ 
   return (
-    <div className="grid grid-cols-4">
-      {Object.entries(tagDir).map(([tag, files]) => (
-        <div key={tag} className="folder-container mb-4 border p-3 ">
+    <div className="md:grid md:grid-cols-3 ">
+      {Object.entries(tagDir)
+      .sort(([tagA], [tagB]) => tagA.localeCompare(tagB))
+        .map(([tag, files]) => (
+        <div key={tag} className="folder-container mb-4 border pt-2 ">
           <h3
             className="font-bold text-lg cursor-pointer"
             onClick={() => toggleFolder(tag)}
@@ -20,9 +28,11 @@ function FolderView({
           </h3>
 
           {expandedFolders[tag] && (
-            <div className="w-screen">
+            <div className="">
               <ul className="mt-2  gap-3 justify-center  mx-auto ">
-                {files.map((file) => (
+                {files
+                  .sort((a, b) => a.originalName.localeCompare(b.originalName))
+                  .map((file) => (
                   <li key={file.filename} className="mb-2 justify-center ">
                     <span
                       className="text-blue-500 cursor-pointer hover:underline"
@@ -30,15 +40,21 @@ function FolderView({
                     >
                       {file.originalName}
                     </span>
-                    <button
-                      className="ml-4 text-red-500 hover:underline"
-                      onClick={() => handleFileDelete(file.filename)}
-                      disabled={deletingFile === file.filename}
-                    >
-                      {deletingFile === file.filename
-                        ? "Deleting..."
-                        : "Delete"}
-                    </button>
+                    {activeMenu === "update-files" && (
+                      <button
+                        className="ml-4 text-red-500 hover:underline"
+                        onClick={() => handleFileDelete(file.filename)}
+                        disabled={deletingFile === file.filename}
+                      >
+                        {deletingFile === file.filename
+                          ? "Deleting..."
+                          : "Delete"}
+                      </button>
+                    )}
+                    <p>
+                      Last Update:{" "}
+                      {format(new Date(file.updatedAt), ` MMMM dd yyyy`)}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -49,5 +65,8 @@ function FolderView({
     </div>
   );
 }
+
+
+
 
 export default FolderView;
