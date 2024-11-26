@@ -15,7 +15,7 @@ The Buekom Help Center app allows authorized users to access important files and
 - **User Roles**  
   The app supports two types of users:
   - **Admin**: Can view, add, edit, and delete files within the Help Center.
-  - **Registered User**: Can only view files and resources.
+  - **User**: Can only view files and resources.
 
 - **Feedback System**  
   Registered users can leave feedback for the admin, such as reporting a problem with a resource or suggesting improvements to a file. This ensures that issues can be resolved efficiently.
