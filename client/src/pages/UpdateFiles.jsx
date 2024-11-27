@@ -25,6 +25,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
         files[tag].map((file) => ({
           originalName: file.originalName,
           filename: file.filename,
+          update:file.updatedAt,
           tags: file.tags || [],
           firstTag: file.tags && file.tags.length > 0 ? file.tags[0] : null,
         }))

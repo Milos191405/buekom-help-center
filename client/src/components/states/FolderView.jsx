@@ -9,8 +9,6 @@ function FolderView({
   expandedFolders, // State to track which folders are expanded
   activeMenu, // Current active menu for conditional UI logic
 }) {
- 
-
   // Group files by their firstTag (or "Other Files" if no firstTag)
   const groupedByTag = files.reduce((acc, file) => {
     const tag = file.firstTag || "Other Files"; // Default to "Other Files" if no firstTag
@@ -18,8 +16,6 @@ function FolderView({
     acc[tag].push(file);
     return acc;
   }, {});
-
-
 
   // Deduplicate files: Use both filename and firstTag to determine uniqueness
   const deduplicatedFiles = files.filter((file, index, self) => {
@@ -31,15 +27,13 @@ function FolderView({
     );
   });
 
-
-
   return (
     <div className="md:grid md:grid-cols-3 gap-4">
       {/* Iterate through each tag group */}
       {Object.entries(groupedByTag)
-        .sort(([tagA], [tagB]) => tagA.localeCompare(tagB)) 
+        .sort(([tagA], [tagB]) => tagA.localeCompare(tagB)) // Sort tags alphabetically
         .map(([tag, files]) => {
-          const isFolderExpanded = expandedFolders[tag]; 
+          const isFolderExpanded = expandedFolders[tag]; // Check if the folder is expanded
 
           return (
             <div
@@ -64,16 +58,18 @@ function FolderView({
                     ) // Sort files alphabetically
                     .map((file) => {
                       // Format the `updatedAt` date properly
-                      const formattedDate = file.updatedAt
-                        ? format(new Date(file.updatedAt), "MMMM dd, yyyy")
-                        : "N/A"; 
-                      
+                      const formattedDate = file.update
+                        ? format(
+                            new Date(file.update),
+                            "MMMM dd, yyyy HH:mm:ss"
+                          )
+                        : "N/A"; // Default if `update` is missing
 
                       return (
                         <li
                           key={
                             file.fileId ||
-                            `${file.filename}-${file.originalName}-${file.updatedAt}`
+                            `${file.filename}-${file.originalName}-${file.update}`
                           }
                           className="mb-2"
                         >
@@ -101,9 +97,8 @@ function FolderView({
                           </div>
                           {/* File Last Update */}
                           <p className="text-sm text-gray-500">
-                            Last Update: {formattedDate}
+                            Last Update: <span className="font-bold">{formattedDate}</span>
                           </p>
-                         
                         </li>
                       );
                     })}
