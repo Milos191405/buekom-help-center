@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 5000; // Set default port if ENV_VARS is not se
 
 // Middleware
 app.use(cors({ origin: "http://localhost:5173", credentials: true })); // Allow CORS from the frontend
+
 app.use(express.json());
 app.use(cookieParser());
 
