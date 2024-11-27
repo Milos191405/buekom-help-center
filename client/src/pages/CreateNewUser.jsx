@@ -27,7 +27,7 @@ function CreateUser() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/admin/create-user",
+        "https://buekom-help-center-server.onrender.com/api/auth/admin/create-user",
         { username, password, role },
         { withCredentials: true } // Include cookies (JWT)
       );

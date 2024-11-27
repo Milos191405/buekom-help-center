@@ -21,7 +21,7 @@ function SignUp({ setIsLoggedIn, setUsername }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        "https://buekom-help-center-server.onrender.com/api/auth/signup",
         {
           username,
           password,

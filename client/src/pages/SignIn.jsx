@@ -25,7 +25,7 @@ function SignIn({ setIsLoggedIn, setUsername, setUserRole }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://buekom-help-center-server.onrender.com/api/auth/login",
         { username, password },
         { withCredentials: true }
       );

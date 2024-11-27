@@ -26,7 +26,7 @@ function CreateAdmin( {onLogin}) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/admin/create-admin",
+        "https://buekom-help-center-server.onrender.com/api/admin/create-admin",
         { username, password }, // Only username and password for admin creation
         { withCredentials: true } // Include cookies (JWT)
       );
