@@ -70,6 +70,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
 
   // Handle file deletion
 const handleFileDelete = async (fileName) => {
+  // Prompt the user for confirmation before proceeding with deletion
   if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
     return;
   }
@@ -77,6 +78,7 @@ const handleFileDelete = async (fileName) => {
   setDeletingFile(fileName); // Indicate deletion is in progress
 
   try {
+    // Make the DELETE request to the server to delete the file
     const response = await axios.delete(
       `${API_BASE_URL}/api/upload/${fileName}`
     );
@@ -85,20 +87,34 @@ const handleFileDelete = async (fileName) => {
       // Successfully deleted, refresh the file list
       fetchUploadedFiles(); // Refresh the list of uploaded files
       alert(`"${fileName}" has been successfully deleted!`);
+    } else {
+      alert(`Unexpected response from server: ${response.status}`);
     }
   } catch (error) {
+    // Log the error and provide feedback to the user
     console.error("Error deleting file:", error);
-    if (error.response && error.response.status === 404) {
-      alert(
-        `The file "${fileName}" was not found or has already been deleted.`
-      );
+
+    if (error.response) {
+      if (error.response.status === 404) {
+        // If file is not found
+        alert(
+          `The file "${fileName}" was not found or has already been deleted.`
+        );
+      } else {
+        // Handle other errors (e.g., server issues)
+        alert(`Failed to delete "${fileName}". Please try again later.`);
+      }
     } else {
-      alert(`Failed to delete "${fileName}". Please try again later.`);
+      // If there's no response from the server
+      alert(
+        "Failed to delete the file. Please check your connection and try again."
+      );
     }
   } finally {
-    setDeletingFile(null); // Reset the deleting state once operation completes
+    setDeletingFile(null); // Reset the deleting state once the operation is complete
   }
 };
+
 
   // Apply tag filtering
   const filteredFiles = tagFilter
