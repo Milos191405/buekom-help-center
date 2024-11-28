@@ -69,29 +69,34 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
   };
 
   // Handle file deletion
-  const handleFileDelete = async (fileName) => {
-    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-      return;
+const handleFileDelete = async (fileName) => {
+  if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+    return;
+  }
+
+  setDeletingFile(fileName);
+
+  try {
+    // Ensure the file path is correct for the DELETE request
+    const response = await axios.delete(
+      `${API_BASE_URL}/api/upload/${fileName}`
+    );
+
+    if (response.status === 200) {
+      fetchUploadedFiles(); // Refresh the file list
+      alert(`"${fileName}" has been successfully deleted!`);
     }
-
-    setDeletingFile(fileName);
-
-    try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/api/upload/${fileName}`
-      );
-
-      if (response.status === 200) {
-        fetchUploadedFiles(); // Refresh the list of uploaded files
-        alert(`"${fileName}" has been successfully deleted!`);
-      }
-    } catch (error) {
-      console.error("Error deleting file:", error);
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    if (error.response && error.response.status === 404) {
+      alert(`File "${fileName}" was not found on the server.`);
+    } else {
       alert(`Failed to delete "${fileName}". Please try again later.`);
-    } finally {
-      setDeletingFile(null); // Reset the deleting state
     }
-  };
+  } finally {
+    setDeletingFile(null);
+  }
+};
 
   // Apply tag filtering
   const filteredFiles = tagFilter
