@@ -11,7 +11,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
   const [tagFilter, setTagFilter] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [deletingFile, setDeletingFile] = useState(null);
-  const [expandedFolders, setExpandedFolders] = useState({}); // Track expanded folders
+  const [expandedFolders, setExpandedFolders] = useState({});
 
   const singleFileInputRef = useRef(null);
   const folderUploadInputRef = useRef(null);
@@ -73,7 +73,6 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
 
   // Handle file deletion
   const handleFileDelete = async (fileName) => {
-    // Prompt the user for confirmation before proceeding with deletion
     if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
       return;
     }
@@ -81,42 +80,52 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
     setDeletingFile(fileName); // Indicate deletion is in progress
 
     try {
-      // Make the DELETE request to the server to delete the file
       const response = await axios.delete(
         `${API_BASE_URL}/api/upload/${fileName}`
       );
 
       if (response.status === 200) {
-        // Successfully deleted, refresh the file list
         fetchUploadedFiles(); // Refresh the list of uploaded files
         toast.success(`"${fileName}" has been successfully deleted!`);
       } else {
         toast.error(`Unexpected response from server: ${response.status}`);
       }
     } catch (error) {
-      // Log the error and provide feedback to the user
       console.error("Error deleting file:", error);
 
       if (error.response) {
         if (error.response.status === 404) {
-          // If file is not found
           toast.error(
             `The file "${fileName}" was not found or has already been deleted.`
           );
         } else {
-          // Handle other errors (e.g., server issues)
           toast.error(
             `Failed to delete "${fileName}". Please try again later.`
           );
         }
       } else {
-        // If there's no response from the server
         toast.error(
           "Failed to delete the file. Please check your connection and try again."
         );
       }
     } finally {
-      setDeletingFile(null); // Reset the deleting state once the operation is complete
+      setDeletingFile(null); // Reset deleting state
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (files) => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+
+    try {
+      await axios.post(`${API_BASE_URL}/api/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      fetchUploadedFiles(); // Refresh after upload
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      toast.error("Error uploading files. Please try again.");
     }
   };
 
@@ -146,23 +155,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
               <input
                 type="file"
                 ref={singleFileInputRef}
-                onChange={async (e) => {
-                  const selectedFile = e.target.files[0];
-                  if (selectedFile) {
-                    const formData = new FormData();
-                    formData.append("files", selectedFile);
-                    try {
-                      await axios.post(`${API_BASE_URL}/api/upload`, formData, {
-                        headers: {
-                          "Content-Type": "multipart/form-data",
-                        },
-                      });
-                      fetchUploadedFiles(); // Refresh files after upload
-                    } catch (error) {
-                      console.error("Error uploading single file:", error);
-                    }
-                  }
-                }}
+                onChange={(e) => handleFileUpload([e.target.files[0]])}
                 className="mb-4 border w-full"
               />
             </div>
@@ -171,23 +164,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
               <input
                 type="file"
                 ref={folderUploadInputRef}
-                onChange={async (e) => {
-                  const selectedFiles = Array.from(e.target.files);
-                  const formData = new FormData();
-                  selectedFiles.forEach((file) => {
-                    formData.append("files", file);
-                  });
-                  try {
-                    await axios.post(`${API_BASE_URL}/api/upload`, formData, {
-                      headers: {
-                        "Content-Type": "multipart/form-data",
-                      },
-                    });
-                    fetchUploadedFiles(); // Refresh files after upload
-                  } catch (error) {
-                    console.error("Error uploading folder:", error);
-                  }
-                }}
+                onChange={(e) => handleFileUpload(Array.from(e.target.files))}
                 className="mb-4 border w-full"
                 webkitdirectory=""
                 multiple
