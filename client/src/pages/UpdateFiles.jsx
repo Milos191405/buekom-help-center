@@ -74,27 +74,29 @@ const handleFileDelete = async (fileName) => {
     return;
   }
 
-  setDeletingFile(fileName);
+  setDeletingFile(fileName); // Indicate deletion is in progress
 
   try {
-    // Ensure the file path is correct for the DELETE request
     const response = await axios.delete(
       `${API_BASE_URL}/api/upload/${fileName}`
     );
 
     if (response.status === 200) {
-      fetchUploadedFiles(); // Refresh the file list
+      // Successfully deleted, refresh the file list
+      fetchUploadedFiles(); // Refresh the list of uploaded files
       alert(`"${fileName}" has been successfully deleted!`);
     }
   } catch (error) {
     console.error("Error deleting file:", error);
     if (error.response && error.response.status === 404) {
-      alert(`File "${fileName}" was not found on the server.`);
+      alert(
+        `The file "${fileName}" was not found or has already been deleted.`
+      );
     } else {
       alert(`Failed to delete "${fileName}". Please try again later.`);
     }
   } finally {
-    setDeletingFile(null);
+    setDeletingFile(null); // Reset the deleting state once operation completes
   }
 };
 
