@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 5000; // Set default port if ENV_VARS is not se
 const allowedOrigins = [
   "http://localhost:5173", // Local development frontend
   "https://buekom-help-center.onrender.com", // Production frontend
+  // Add other environments as needed
 ];
 
 // Configure CORS middleware

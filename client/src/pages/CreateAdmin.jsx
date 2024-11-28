@@ -29,7 +29,12 @@ function CreateAdmin( {onLogin}) {
       const response = await axios.post(
         `${API_BASE_URL}/api/admin/create-admin`,
         { username, password }, // Only username and password for admin creation
-        { withCredentials: true } // Include cookies (JWT)
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json", 
+          },
+        }
       );
 
       if (response.data.success) {
