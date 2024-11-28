@@ -2,6 +2,7 @@ import { API_BASE_URL } from "../config.js";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import FolderView from "../components/states/FolderView";
+import { toast } from "react-toastify";
 
 function UpdateFiles({ isLoggedIn, activeMenu }) {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -67,27 +68,43 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
     }
   };
 
-  // Delete file
-  const handleFileDelete = async (fileName) => {
-    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-      return;
-    }
+ const handleFileDelete = async (fileName) => {
+   // Show a confirmation dialog to the user before proceeding
+   if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+     return;
+   }
 
-    setDeletingFile(fileName);
-    try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/api/upload/${fileName}`
-      );
+   setDeletingFile(fileName); // Set the state to indicate that file is being deleted
 
-      if (response.status === 200) {
-        fetchUploadedFiles(); // Refresh the files list
-      }
-    } catch (error) {
-      console.error("Error deleting file:", error);
-    } finally {
-      setDeletingFile(null);
-    }
-  };
+   try {
+     // Send DELETE request to backend to delete the file
+     const response = await axios.delete(
+       `${API_BASE_URL}/api/upload/${fileName}`
+     );
+
+     if (response.status === 200) {
+       // Successfully deleted, refresh the file list
+       fetchUploadedFiles(); // Refresh the list of uploaded files
+       alert(`"${fileName}" has been successfully deleted!`); // Optional success feedback
+     }
+   } catch (error) {
+     console.error("Error deleting file:", error);
+     // Show error to the user if the deletion failed
+     alert(`Failed to delete "${fileName}". Please try again later.`); // Optional error feedback
+   } finally {
+     setDeletingFile(null); // Reset the deleting state once operation completes
+   }
+ };
+
+ // Helper function to fetch uploaded files (after deletion)
+ const fetchUploadedFiles = async () => {
+   try {
+     const response = await axios.get(`${API_BASE_URL}/api/upload`);
+     setFiles(response.data.files); // Assuming `setFiles` is your state setter for uploaded files
+   } catch (error) {
+     console.error("Error fetching files:", error);
+   }
+ };
 
   // Apply tag filtering
   const filteredFiles = tagFilter

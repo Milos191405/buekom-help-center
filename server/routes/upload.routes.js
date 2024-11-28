@@ -154,29 +154,45 @@ router.get("/files/:filename", (req, res) => {
     res.status(404).json({ message: "File not found." });
   }
 });
-
 // DELETE: Delete a specific file and its metadata
-router.delete("/:filename", async (req, res) => {
-  const filePath = path.join(process.cwd(), "uploads", req.params.filename);
+router.delete('/:filename', async (req, res) => {
+  const filePath = path.join(process.cwd(), 'uploads', req.params.filename); // Get the file path on the server
 
-  // Check if the file exists in the database first
-  const fileInDb = await File.findOne({ filename: req.params.filename });
-  if (!fileInDb) {
-    return res.status(404).json({ message: "File metadata not found in DB." });
-  }
-
-  // Check if the file exists on the filesystem
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: "File not found on the server." });
-  }
+  // Log file path for debugging
+  console.log('File path:', filePath);
 
   try {
-    fs.unlinkSync(filePath); // Delete the file from the filesystem
-    await File.deleteOne({ filename: req.params.filename }); // Delete the file's metadata from DB
-    res.status(200).json({ message: "File deleted successfully." });
+    // Check if the file exists in the database first
+    const fileInDb = await File.findOne({ filename: req.params.filename });
+    if (!fileInDb) {
+      console.log(`File metadata not found in DB for filename: ${req.params.filename}`);
+      return res.status(404).json({ message: `File metadata not found in DB for ${req.params.filename}.` });
+    }
+
+    // Log file metadata for debugging
+    console.log('File metadata in DB:', fileInDb);
+
+    // Check if the file exists on the filesystem
+    if (!fs.existsSync(filePath)) {
+      console.log(`File not found on the server at path: ${filePath}`);
+      return res.status(404).json({ message: `File ${req.params.filename} not found on the server.` });
+    }
+
+    // Delete the file from the filesystem (async version recommended for production)
+    await fs.promises.unlink(filePath);  // Using async unlink for better performance
+
+    // Delete the file's metadata from DB
+    await File.deleteOne({ filename: req.params.filename });
+
+    // Log successful deletion (optional)
+    console.log(`File ${req.params.filename} deleted successfully from both DB and filesystem.`);
+
+    // Send success response
+    res.status(200).json({ message: 'File deleted successfully.' });
   } catch (error) {
-    console.error("Error deleting file:", error);
-    res.status(500).json({ message: "Error deleting file." });
+    // Log error and send response
+    console.error('Error deleting file:', error);
+    res.status(500).json({ message: 'Error deleting file.' });
   }
 });
 
