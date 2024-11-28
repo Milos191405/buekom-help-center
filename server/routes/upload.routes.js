@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import File from "../models/File.js";
+import File from "../models/File.js"; // Assuming File model is properly set up in MongoDB
 
 const router = express.Router();
 
@@ -19,7 +19,6 @@ const extractTagsFromMarkdown = (content) => {
   }
   return [];
 };
-
 
 // Configure Multer storage
 const storage = multer.diskStorage({
@@ -117,7 +116,6 @@ router.post("/", upload.array("files"), async (req, res) => {
 // GET: Retrieve all uploaded files with tags grouped
 router.get("/", async (req, res) => {
   try {
-    // Fetch all files, including the updatedAt field
     const files = await File.find(
       {},
       { _id: 0, filename: 1, originalName: 1, tags: 1, updatedAt: 1 }
@@ -154,6 +152,7 @@ router.get("/files/:filename", (req, res) => {
     res.status(404).json({ message: "File not found." });
   }
 });
+
 // DELETE: Delete a specific file and its metadata
 router.delete("/:filename", async (req, res) => {
   const filePath = path.join(process.cwd(), "uploads", req.params.filename); // Get the file path on the server
@@ -168,11 +167,9 @@ router.delete("/:filename", async (req, res) => {
       console.log(
         `File metadata not found in DB for filename: ${req.params.filename}`
       );
-      return res
-        .status(404)
-        .json({
-          message: `File metadata not found in DB for ${req.params.filename}.`,
-        });
+      return res.status(404).json({
+        message: `File metadata not found in DB for ${req.params.filename}.`,
+      });
     }
 
     // Log file metadata for debugging
@@ -183,11 +180,9 @@ router.delete("/:filename", async (req, res) => {
       await fs.promises.access(filePath, fs.constants.F_OK); // Better way to check if the file exists
     } catch (err) {
       console.log(`File not found on the server at path: ${filePath}`);
-      return res
-        .status(404)
-        .json({
-          message: `File ${req.params.filename} not found on the server.`,
-        });
+      return res.status(404).json({
+        message: `File ${req.params.filename} not found on the server.`,
+      });
     }
 
     // Delete the file from the filesystem (async version recommended for production)

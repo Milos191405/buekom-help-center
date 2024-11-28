@@ -29,7 +29,8 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
           filename: file.filename,
           update: file.updatedAt,
           tags: file.tags || [],
-          firstTag: file.tags && file.tags.length > 0 ? file.tags[0] : null,
+          firstTag:
+            file.tags && file.tags.length > 0 ? file.tags[0] : "Untagged",
         }))
       );
 
@@ -49,8 +50,10 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
 
   // Fetch files on mount
   useEffect(() => {
-    fetchUploadedFiles();
-  }, []);
+    if (isLoggedIn) {
+      fetchUploadedFiles();
+    }
+  }, [isLoggedIn]);
 
   // Handle file click to view content
   const handleFileClick = async (fileName) => {
@@ -69,52 +72,53 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
   };
 
   // Handle file deletion
-const handleFileDelete = async (fileName) => {
-  // Prompt the user for confirmation before proceeding with deletion
-  if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-    return;
-  }
-
-  setDeletingFile(fileName); // Indicate deletion is in progress
-
-  try {
-    // Make the DELETE request to the server to delete the file
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/upload/${fileName}`
-    );
-
-    if (response.status === 200) {
-      // Successfully deleted, refresh the file list
-      fetchUploadedFiles(); // Refresh the list of uploaded files
-      alert(`"${fileName}" has been successfully deleted!`);
-    } else {
-      alert(`Unexpected response from server: ${response.status}`);
+  const handleFileDelete = async (fileName) => {
+    // Prompt the user for confirmation before proceeding with deletion
+    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+      return;
     }
-  } catch (error) {
-    // Log the error and provide feedback to the user
-    console.error("Error deleting file:", error);
 
-    if (error.response) {
-      if (error.response.status === 404) {
-        // If file is not found
-        alert(
-          `The file "${fileName}" was not found or has already been deleted.`
-        );
-      } else {
-        // Handle other errors (e.g., server issues)
-        alert(`Failed to delete "${fileName}". Please try again later.`);
-      }
-    } else {
-      // If there's no response from the server
-      alert(
-        "Failed to delete the file. Please check your connection and try again."
+    setDeletingFile(fileName); // Indicate deletion is in progress
+
+    try {
+      // Make the DELETE request to the server to delete the file
+      const response = await axios.delete(
+        `${API_BASE_URL}/api/upload/${fileName}`
       );
-    }
-  } finally {
-    setDeletingFile(null); // Reset the deleting state once the operation is complete
-  }
-};
 
+      if (response.status === 200) {
+        // Successfully deleted, refresh the file list
+        fetchUploadedFiles(); // Refresh the list of uploaded files
+        toast.success(`"${fileName}" has been successfully deleted!`);
+      } else {
+        toast.error(`Unexpected response from server: ${response.status}`);
+      }
+    } catch (error) {
+      // Log the error and provide feedback to the user
+      console.error("Error deleting file:", error);
+
+      if (error.response) {
+        if (error.response.status === 404) {
+          // If file is not found
+          toast.error(
+            `The file "${fileName}" was not found or has already been deleted.`
+          );
+        } else {
+          // Handle other errors (e.g., server issues)
+          toast.error(
+            `Failed to delete "${fileName}". Please try again later.`
+          );
+        }
+      } else {
+        // If there's no response from the server
+        toast.error(
+          "Failed to delete the file. Please check your connection and try again."
+        );
+      }
+    } finally {
+      setDeletingFile(null); // Reset the deleting state once the operation is complete
+    }
+  };
 
   // Apply tag filtering
   const filteredFiles = tagFilter
@@ -148,15 +152,11 @@ const handleFileDelete = async (fileName) => {
                     const formData = new FormData();
                     formData.append("files", selectedFile);
                     try {
-                      await axios.post(
-                        "http://localhost:5000/api/upload",
-                        formData,
-                        {
-                          headers: {
-                            "Content-Type": "multipart/form-data",
-                          },
-                        }
-                      );
+                      await axios.post(`${API_BASE_URL}/api/upload`, formData, {
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                      });
                       fetchUploadedFiles(); // Refresh files after upload
                     } catch (error) {
                       console.error("Error uploading single file:", error);
@@ -178,15 +178,11 @@ const handleFileDelete = async (fileName) => {
                     formData.append("files", file);
                   });
                   try {
-                    await axios.post(
-                      "http://localhost:5000/api/upload",
-                      formData,
-                      {
-                        headers: {
-                          "Content-Type": "multipart/form-data",
-                        },
-                      }
-                    );
+                    await axios.post(`${API_BASE_URL}/api/upload`, formData, {
+                      headers: {
+                        "Content-Type": "multipart/form-data",
+                      },
+                    });
                     fetchUploadedFiles(); // Refresh files after upload
                   } catch (error) {
                     console.error("Error uploading folder:", error);
