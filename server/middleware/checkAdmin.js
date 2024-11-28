@@ -4,7 +4,12 @@ export const checkAdmin = async (req, res, next) => {
   try {
     // Ensure req.user is populated from your authentication middleware
     if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Unauthorized - No user information found",
+        });
     }
 
     // Log the user ID and role for debugging
@@ -30,7 +35,7 @@ export const checkAdmin = async (req, res, next) => {
     // Proceed to the next middleware or route handler
     next();
   } catch (error) {
-    console.error("Error in checkAdmin middleware:", error);
+    console.error("Error in checkAdmin middleware:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

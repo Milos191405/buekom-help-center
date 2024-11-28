@@ -61,7 +61,7 @@ function FolderView({
                       const formattedDate = file.update
                         ? format(
                             new Date(file.update),
-                            "MMMM dd, yyyy HH:mm:ss"
+                            "MMMM dd, yyyy"
                           )
                         : "N/A"; // Default if `update` is missing
 
