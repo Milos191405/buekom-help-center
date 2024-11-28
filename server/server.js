@@ -14,8 +14,27 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000; // Set default port if ENV_VARS is not set
 
-// Middleware
-app.use(cors({ origin: "http://localhost:5173", credentials: true })); // Allow CORS from the frontend
+// Define allowed origins (local and production frontends)
+const allowedOrigins = [
+  "http://localhost:5173", // Local development frontend
+  "https://buekom-help-center.onrender.com", // Production frontend
+];
+
+// Configure CORS middleware
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow the request if the origin is in the allowed list, or if the origin is undefined (for local dev)
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed"), false);
+    }
+  },
+  credentials: true, // Allow cookies (JWT tokens) to be sent
+};
+
+// Use CORS middleware with the defined options
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());

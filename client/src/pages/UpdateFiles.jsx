@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config.js";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import FolderView from "../components/states/FolderView";
@@ -18,14 +19,14 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
   const fetchUploadedFiles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/upload");
+      const response = await axios.get(`${API_BASE_URL}/api/upload`);
       const files = response.data.tagDir || {};
 
       const allFiles = Object.keys(files).flatMap((tag) =>
         files[tag].map((file) => ({
           originalName: file.originalName,
           filename: file.filename,
-          update:file.updatedAt,
+          update: file.updatedAt,
           tags: file.tags || [],
           firstTag: file.tags && file.tags.length > 0 ? file.tags[0] : null,
         }))
@@ -56,7 +57,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
     if (file) {
       try {
         const contentResponse = await axios.get(
-          `http://localhost:5000/api/upload/files/${file.filename}`
+          `${API_BASE_URL}/api/upload/files/${fileName}`
         );
         const content = contentResponse.data;
         // Do something with the file content
@@ -75,7 +76,7 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
     setDeletingFile(fileName);
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/upload/${fileName}`
+        `${API_BASE_URL}/api/upload/${fileName}`
       );
 
       if (response.status === 200) {

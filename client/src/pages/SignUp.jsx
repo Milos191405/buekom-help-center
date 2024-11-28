@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_BASE_URL } from "../config.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -20,13 +21,10 @@ function SignUp({ setIsLoggedIn, setUsername }) {
     setMessage(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        {
-          username,
-          password,
-        }
-      );
+      const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
+        username,
+        password,
+      });
 
       if (response.data.success) {
         setIsLoggedIn(true);

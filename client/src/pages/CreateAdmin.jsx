@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { API_BASE_URL } from "../config.js";
 
 function CreateAdmin( {onLogin}) {
   const [username, setUsernameLocal] = useState("");
@@ -26,7 +27,7 @@ function CreateAdmin( {onLogin}) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/admin/create-admin",
+        `${API_BASE_URL}/api/admin/create-admin`,
         { username, password }, // Only username and password for admin creation
         { withCredentials: true } // Include cookies (JWT)
       );

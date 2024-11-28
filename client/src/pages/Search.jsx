@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import { API_BASE_URL } from "../config.js";
 import PropTypes from "prop-types";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import FolderView from "../components/states/FolderView";
+
 
 function Search({ isLoggedIn, username }) {
   const [uploadedFiles, setUploadedFiles] = useState([]); // Initialize uploaded files state
@@ -17,7 +19,7 @@ function Search({ isLoggedIn, username }) {
   const fetchUploadedFiles = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/upload");
+      const response = await axios.get(`${API_BASE_URL}/api/upload`);
       const files = response.data.files;
 
       const tagsSet = new Set();
@@ -25,7 +27,7 @@ function Search({ isLoggedIn, username }) {
         files.map(async (file) => {
           try {
             const contentResponse = await axios.get(
-              `http://localhost:5000/api/upload/files/${file.filename}`
+              `${API_BASE_URL}/api/upload/files/${file.filename}`
             );
             const content = contentResponse.data;
             const tagLine = content.match(/^tags:\s*(.*)$/m); // Extract tags from content
@@ -69,7 +71,7 @@ function Search({ isLoggedIn, username }) {
   const handleFileClick = async (fileName) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/upload/files/${fileName}`
+        `${API_BASE_URL}/api/upload/files/${fileName}`
       );
       const content = response.data;
       setSelectedFileContent(content);

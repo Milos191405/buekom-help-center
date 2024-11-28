@@ -1,6 +1,7 @@
-// ManageUsers.js
+
 import  { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config.js"; 
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,10 +11,9 @@ const ManageUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/auth/users",
-          { withCredentials: true }
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/auth/users`, {
+          withCredentials: true,
+        });
         setUsers(response.data.users);
       } catch (err) {
         setError(err.response?.data?.message || "Error fetching users");
@@ -33,12 +33,9 @@ const ManageUsers = () => {
    if (!confirmDelete) return; 
 
    try {
-     await axios.delete(
-       `http://localhost:5000/api/auth/delete-user/${userId}`,
-       {
-         withCredentials: true,
-       }
-     );
+     await axios.delete(`${API_BASE_URL}/api/auth/delete-user/${userId}`, {
+       withCredentials: true,
+     });
 
      alert("User deleted successfully");
      setUsers(users.filter((user) => user._id !== userId));

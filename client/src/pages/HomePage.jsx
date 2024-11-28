@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { API_BASE_URL } from "../config.js";
 
 
 
@@ -13,7 +14,7 @@ function HomePage({ isLoggedIn, role}) {
 useEffect(() => {
   const fetchAdminStatus = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/admin/existence");
+      const response = await fetch(`${API_BASE_URL}/api/auth/admin/existence`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch admin status: ${response.statusText}`);
