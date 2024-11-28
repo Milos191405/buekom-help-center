@@ -68,43 +68,30 @@ function UpdateFiles({ isLoggedIn, activeMenu }) {
     }
   };
 
- const handleFileDelete = async (fileName) => {
-   // Show a confirmation dialog to the user before proceeding
-   if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
-     return;
-   }
+  // Handle file deletion
+  const handleFileDelete = async (fileName) => {
+    if (!window.confirm(`Are you sure you want to delete "${fileName}"?`)) {
+      return;
+    }
 
-   setDeletingFile(fileName); // Set the state to indicate that file is being deleted
+    setDeletingFile(fileName);
 
-   try {
-     // Send DELETE request to backend to delete the file
-     const response = await axios.delete(
-       `${API_BASE_URL}/api/upload/${fileName}`
-     );
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/api/upload/${fileName}`
+      );
 
-     if (response.status === 200) {
-       // Successfully deleted, refresh the file list
-       fetchUploadedFiles(); // Refresh the list of uploaded files
-       alert(`"${fileName}" has been successfully deleted!`); // Optional success feedback
-     }
-   } catch (error) {
-     console.error("Error deleting file:", error);
-     // Show error to the user if the deletion failed
-     alert(`Failed to delete "${fileName}". Please try again later.`); // Optional error feedback
-   } finally {
-     setDeletingFile(null); // Reset the deleting state once operation completes
-   }
- };
-
- // Helper function to fetch uploaded files (after deletion)
- const fetchUploadedFiles = async () => {
-   try {
-     const response = await axios.get(`${API_BASE_URL}/api/upload`);
-     setFiles(response.data.files); // Assuming `setFiles` is your state setter for uploaded files
-   } catch (error) {
-     console.error("Error fetching files:", error);
-   }
- };
+      if (response.status === 200) {
+        fetchUploadedFiles(); // Refresh the list of uploaded files
+        alert(`"${fileName}" has been successfully deleted!`);
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      alert(`Failed to delete "${fileName}". Please try again later.`);
+    } finally {
+      setDeletingFile(null); // Reset the deleting state
+    }
+  };
 
   // Apply tag filtering
   const filteredFiles = tagFilter
