@@ -48,11 +48,11 @@ const startServer = async () => {
 
     // Serve static files for React app
     const __dirname = path.resolve(); // Path to project root
-    app.use(express.static(path.join(__dirname, "client", "dist"))); // Ensure this matches your React app's build directory
+    app.use(express.static(path.join(__dirname, "client", "build"))); // Ensure this matches your React app's build directory
 
     // Fallback route for React SPA
     app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+      res.sendFile(path.join(__dirname, "client", "build", "index.html"));
     });
 
     // Start listening
