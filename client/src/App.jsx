@@ -8,18 +8,20 @@ import UpdateFiles from "./pages/UpdateFiles.jsx";
 import CreateUser from "./pages/CreateNewUser.jsx";
 import CreateAdmin from "./pages/CreateAdmin.jsx";
 import ManageUsers from "./pages/ManageUsers.jsx";
+import NotFound from "./pages/NotFound.jsx"; // Create this for fallback routes
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
   const [activeMenu, setActiveMenu] = useState("home");
-  const location = useLocation(); 
+  const location = useLocation();
 
+  // Fetch stored user information on component mount
   useEffect(() => {
     const storedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const storedUsername = localStorage.getItem("username");
-    const storedRole = localStorage.getItem("role");
+    const storedUsername = localStorage.getItem("username") || "";
+    const storedRole = localStorage.getItem("role") || "";
 
     if (storedIsLoggedIn) {
       setIsLoggedIn(true);
@@ -28,6 +30,7 @@ function App() {
     }
   }, []);
 
+  // Handle user logout
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem("username");
@@ -37,19 +40,67 @@ function App() {
     setRole("");
   };
 
+  // Update active menu based on the current route
   useEffect(() => {
-    
-    const path = location.pathname;
-    if (path === "/update-files") {
-      setActiveMenu("update-files");
-    } else if (path === "/search") {
-      setActiveMenu("search");
-    } else if (path === "/manageUsers") {
-      setActiveMenu("manage-users");
-    } else {
-      setActiveMenu("home"); 
-    }
-  }, [location.pathname]); 
+    const pathToMenu = {
+      "/update-files": "update-files",
+      "/search": "search",
+      "/manageUsers": "manage-users",
+    };
+
+    setActiveMenu(pathToMenu[location.pathname] || "home");
+  }, [location.pathname]);
+
+  // Define all routes dynamically
+  const routes = [
+    {
+      path: "/",
+      element: (
+        <HomePage isLoggedIn={isLoggedIn} username={username} role={role} />
+      ),
+    },
+    {
+      path: "/signIn",
+      element: (
+        <SignIn
+          setIsLoggedIn={setIsLoggedIn}
+          setUsername={setUsername}
+          setUserRole={setRole}
+        />
+      ),
+    },
+    { path: "/create-admin", element: <CreateAdmin /> },
+    { path: "/create-user", element: <CreateUser /> },
+    {
+      path: "/search",
+      element: <Search isLoggedIn={isLoggedIn} username={username} />,
+    },
+    {
+      path: "/update-files",
+      element: (
+        <UpdateFiles
+          isLoggedIn={isLoggedIn}
+          username={username}
+          activeMenu={activeMenu}
+        />
+      ),
+    },
+    {
+      path: "/manageUsers",
+      element: (
+        <ManageUsers
+          isLoggedIn={isLoggedIn}
+          username={username}
+          role={role}
+          setIsLoggedIn={setIsLoggedIn}
+          setUsername={setUsername}
+          onLogout={handleLogout}
+          setUserRole={setRole}
+        />
+      ),
+    },
+    { path: "*", element: <NotFound /> }, // Fallback route
+  ];
 
   return (
     <>
@@ -58,55 +109,12 @@ function App() {
         username={username}
         onLogout={handleLogout}
         role={role}
-        activeMenu={activeMenu} // Pass activeMenu to Navbar
+        activeMenu={activeMenu}
       />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage isLoggedIn={isLoggedIn} username={username} role={role} />
-          }
-        />
-        <Route
-          path="/signIn"
-          element={
-            <SignIn
-              setIsLoggedIn={setIsLoggedIn}
-              setUsername={setUsername}
-              setUserRole={setRole}
-            />
-          }
-        />
-        <Route path="/create-admin" element={<CreateAdmin />} />
-        <Route path="/create-user" element={<CreateUser />} />
-        <Route
-          path="/search"
-          element={<Search isLoggedIn={isLoggedIn} username={username} />}
-        />
-        <Route
-          path="/update-files"
-          element={
-            <UpdateFiles
-              isLoggedIn={isLoggedIn}
-              username={username}
-              activeMenu={activeMenu} 
-            />
-          }
-        />
-        <Route
-          path="/manageUsers"
-          element={
-            <ManageUsers
-              isLoggedIn={isLoggedIn}
-              username={username}
-              role={role}
-              setIsLoggedIn={setIsLoggedIn}
-              setUsername={setUsername}
-              onLogout={handleLogout}
-              setUserRole={setRole}
-            />
-          }
-        />
+        {routes.map(({ path, element }, index) => (
+          <Route key={index} path={path} element={element} />
+        ))}
       </Routes>
     </>
   );

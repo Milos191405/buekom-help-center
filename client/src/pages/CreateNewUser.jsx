@@ -30,7 +30,7 @@ function CreateUser() {
       const response = await axios.post(
         `${API_BASE_URL}/api/auth/admin/create-user`,
         { username, password, role },
-        { withCredentials: true } // Include cookies (JWT)
+        { withCredentials: true } 
       );
 
       if (response.data.success) {

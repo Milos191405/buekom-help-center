@@ -2,67 +2,63 @@ import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
-import { connectDB } from "./config/db.js"; // Import the connectDB function
+import { connectDB } from "./config/db.js";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
-import path from "path"; // Import path for serving static files
+import path from "path";
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Set default port if ENV_VARS is not set
+const PORT = process.env.PORT || 5000;
 
-// Define allowed origins (local and production frontends)
 const allowedOrigins = [
-  "http://localhost:5173", // Local development frontend
-  "https://buekom-help-center.onrender.com", // Production frontend
-  // Add other environments as needed
+  "http://localhost:5173",
+  "https://buekom-help-center.onrender.com",
 ];
 
-// Configure CORS middleware
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow the request if the origin is in the allowed list, or if the origin is undefined (for local dev)
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error("CORS not allowed"), false);
     }
   },
-  credentials: true, // Allow cookies (JWT tokens) to be sent
+  credentials: true,
 };
 
-// Use CORS middleware with the defined options
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(cookieParser());
-
-// Serve static files from the uploads directory
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// Main async function to start the server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
-    // Define routes
-    app.use("/api/auth", authRoutes); // Authentication routes
-    app.use("/api/upload", uploadRoutes); // File upload routes
-    app.use("/api/admin", adminRoutes); // Admin routes (protected by JWT)
+    // Define API routes
+    app.use("/api/auth", authRoutes);
+    app.use("/api/upload", uploadRoutes);
+    app.use("/api/admin", adminRoutes);
 
-    // Start the server
+    // Serve static files from the React app's build directory
+    const __dirname = path.resolve(); // Ensure __dirname works with ES modules
+    app.use(express.static(path.join(__dirname, "client", "build")));
+
+    // Fallback route for React SPA
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+    });
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to connect to the database:", error.message);
-    process.exit(1); // Exit the process with a failure code
+    process.exit(1);
   }
 };
 
-// Invoke the function to start the server
 startServer();
