@@ -13,9 +13,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Allowed origins for CORS
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://buekom-help-center.onrender.com",
+  "http://localhost:5173", // Local frontend
+  "https://buekom-help-center.onrender.com", // Deployed frontend
 ];
 
 const corsOptions = {
@@ -29,11 +30,13 @@ const corsOptions = {
   credentials: true,
 };
 
+// Middleware setup
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads"))); // Static files for uploads
 
+// Connect to MongoDB and start the server
 const startServer = async () => {
   try {
     await connectDB();
@@ -43,21 +46,22 @@ const startServer = async () => {
     app.use("/api/upload", uploadRoutes);
     app.use("/api/admin", adminRoutes);
 
-    // Serve static files from the React app's build directory
-    const __dirname = path.resolve(); // Ensure __dirname works with ES modules
-    app.use(express.static(path.join(__dirname, "client", "build")));
+    // Serve static files for React app
+    const __dirname = path.resolve(); // Path to project root
+    app.use(express.static(path.join(__dirname, "client", "build"))); // Ensure this matches your React app's build directory
 
     // Fallback route for React SPA
     app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "client", "build", "index.html"));
     });
 
+    // Start listening
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Failed to connect to the database:", error.message);
-    process.exit(1);
+    process.exit(1); // Exit on failure
   }
 };
 
