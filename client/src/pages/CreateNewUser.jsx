@@ -12,7 +12,7 @@ function CreateUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation check
+    // Validation checks
     if (!username || !password) {
       return setMessage("Please fill out all fields");
     }
@@ -24,7 +24,7 @@ function CreateUser() {
     }
 
     setLoading(true);
-    setMessage(null); // Reset the message
+    setMessage(null); // Reset any previous message
 
     try {
       const response = await axios.post(
@@ -55,14 +55,18 @@ function CreateUser() {
         setMessage("Access denied. You don't have permission to create users.");
       } else if (error.response) {
         setMessage(error.response?.data?.message || "Error creating user");
+      } else if (error.message === "Network Error") {
+        setMessage(
+          "Network error. Please check your connection and try again."
+        );
       } else {
-        setMessage("Network error. Please try again later.");
+        // Catch any other unexpected errors
+        setMessage("An unexpected error occurred. Please try again later.");
       }
     } finally {
       setLoading(false); // Always stop loading after the request
     }
   };
-
   return (
     <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 flex items-center justify-center">
       <div className=" ">

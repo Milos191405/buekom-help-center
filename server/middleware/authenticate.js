@@ -1,10 +1,11 @@
-import jwt from "jsonwebtoken";
-
+// Middleware to authenticate the user by verifying the JWT token
 export const authenticate = (req, res, next) => {
-  const token = req.cookies["jwt-buekom"];
+  let token = req.cookies["jwt-buekom"];
 
-  // Log the cookie for debugging
-  console.log("Received Token in Cookies:", token);
+  // If no token is found in cookies, try extracting from Authorization header
+  if (!token && req.headers.authorization) {
+    token = req.headers.authorization.split(" ")[1]; // Get token from Authorization header
+  }
 
   if (!token) {
     return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -13,12 +14,7 @@ export const authenticate = (req, res, next) => {
   try {
     // Verify and decode the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Log the decoded token for debugging
-    console.log("Decoded JWT:", decoded);
-
-    // Attach the decoded token's data (user ID, role, etc.) to the request object
-    req.user = decoded;
+    req.user = decoded; // Attach decoded user info to the request object
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.log("Error in authenticate middleware", error.message);
