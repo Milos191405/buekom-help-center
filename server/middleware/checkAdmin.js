@@ -4,12 +4,10 @@ export const checkAdmin = async (req, res, next) => {
   try {
     // Ensure req.user is populated from your authentication middleware
     if (!req.user) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Unauthorized - No user information found",
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - No user information found",
+      });
     }
 
     // Log the user ID and role for debugging

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-// Middleware to authenticate the user by verifying the JWT token
 export const authenticate = (req, res, next) => {
   const token = req.cookies["jwt-buekom"];
 
