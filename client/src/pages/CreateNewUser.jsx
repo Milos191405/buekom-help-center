@@ -30,7 +30,7 @@ function CreateUser() {
       const response = await axios.post(
         `${API_BASE_URL}/api/auth/admin/create-user`,
         { username, password, role },
-        { withCredentials: true } 
+        { withCredentials: true } // Ensure cookies are sent with the request (if using cookies for authentication)
       );
 
       if (response.data.success) {
@@ -45,21 +45,33 @@ function CreateUser() {
       }
     } catch (error) {
       console.error("Error creating user:", error);
-      setMessage(error.response?.data?.message || "Error creating user");
+
+      // Handle specific errors
+      if (error.response?.status === 401) {
+        setMessage("You are not authorized. Please log in again.");
+        // Optionally, redirect to the login page:
+        // window.location.href = "/login";
+      } else if (error.response?.status === 403) {
+        setMessage("Access denied. You don't have permission to create users.");
+      } else if (error.response) {
+        setMessage(error.response?.data?.message || "Error creating user");
+      } else {
+        setMessage("Network error. Please try again later.");
+      }
     } finally {
-      setLoading(false);
+      setLoading(false); // Always stop loading after the request
     }
   };
 
   return (
     <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 flex items-center justify-center">
       <div className=" ">
-        <div className="flex  justify-center">
+        <div className="flex justify-center">
           <div className="border p-4 rounded shadow-xl bg-gray-100">
             <h2 className="text-center mb-4 font-bold text-xl ">Create User</h2>
             <form onSubmit={handleSubmit} className="flex flex-col w-60">
               <label htmlFor="username" className="mb-1">
-              
+                Username
               </label>
               <input
                 id="username"
@@ -70,7 +82,7 @@ function CreateUser() {
                 className="border p-2 mb-2 rounded"
               />
               <label htmlFor="password" className="mb-1">
-       
+                Password
               </label>
               <input
                 id="password"
@@ -105,16 +117,9 @@ function CreateUser() {
             )}
           </div>
         </div>
-        {/* <div className="">
-        <button className="border p-1 rounded-lg text-white bg-[#005873] hover:bg-[#fa4915]">
-          See all users
-        </button>
-      </div> */}
       </div>
     </article>
   );
-
-
 }
 
 export default CreateUser;
