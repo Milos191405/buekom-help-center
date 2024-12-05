@@ -152,7 +152,7 @@ function CreateUser() {
   );
 }
 
-CreateNewUser.propTypes = {
+CreateUser.propTypes = {
   
   role: PropTypes.string,
 };
