@@ -4,10 +4,6 @@ import { API_BASE_URL } from "../config.js";
 import * as jwt_decode from "jwt-decode";
 import PropTypes from "prop-types";
 
-
-
-
-
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
@@ -15,12 +11,13 @@ function CreateUser() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Get user role from JWT token when the component mounts
+  // Get user role and username from JWT token when the component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
       const decodedToken = jwt_decode(token);
       setRole(decodedToken.role); // Set role from the token
+      setUsernameLocal(decodedToken.username); // Assuming username is in token
     }
   }, []);
 
@@ -77,8 +74,6 @@ function CreateUser() {
       // Handle specific errors
       if (error.response?.status === 401) {
         setMessage("You are not authorized. Please log in again.");
-        // Optionally, redirect to the login page:
-        // window.location.href = "/login";
       } else if (error.response?.status === 403) {
         setMessage("Access denied. You don't have permission to create users.");
       } else if (error.response) {
@@ -87,9 +82,7 @@ function CreateUser() {
         setMessage(
           "Network error. Please check your connection and try again."
         );
-
       } else {
-        // Catch any other unexpected errors
         setMessage("An unexpected error occurred. Please try again later.");
       }
     } finally {
@@ -100,7 +93,10 @@ function CreateUser() {
   return (
     <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 flex items-center justify-center">
       <div>
-        <h2>Welcome {role}</h2> {/* This will show the user's role */}
+        <h2>
+          Welcome {username} ({role})
+        </h2>{" "}
+        {/* This will show the user's username and role */}
         <div className="flex justify-center">
           <div className="border p-4 rounded shadow-xl bg-gray-100">
             <h2 className="text-center mb-4 font-bold text-xl">Create User</h2>
@@ -158,7 +154,6 @@ function CreateUser() {
 }
 
 CreateUser.propTypes = {
-  
   role: PropTypes.string,
 };
 
