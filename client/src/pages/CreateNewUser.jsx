@@ -4,7 +4,7 @@ import { API_BASE_URL } from "../config.js";
 import * as jwt_decode from "jwt-decode";
 
 
-function CreateUser(role) {
+function CreateUser() {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
