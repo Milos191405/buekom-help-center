@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../config.js";
-import * as jwt_decode from "jwt-decode"; // Importing jwt-decode
+import * as jwt_decode from "jwt-decode"; // Import jwt-decode
 
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
@@ -15,8 +15,14 @@ function CreateUser() {
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      const decodedToken = jwt_decode(token);
-      setRole(decodedToken.role); // Set role from the token
+      try {
+        const decodedToken = jwt_decode(token);
+        setRole(decodedToken.role); // Set role from the token
+      } catch (error) {
+        setMessage("Invalid token.");
+      }
+    } else {
+      setMessage("No JWT token found. Please log in.");
     }
   }, []);
 
@@ -51,11 +57,8 @@ function CreateUser() {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
           },
-          withCredentials: true, // Ensure cookies are sent with the request if needed
         }
       );
-
-      console.log("JWT Token: ", token);
 
       if (response.data.success) {
         setMessage("User created successfully");
