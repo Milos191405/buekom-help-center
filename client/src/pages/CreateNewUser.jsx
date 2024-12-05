@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config.js";
-import jwt_decode from "jwt-decode";
+import * as jwt_decode from "jwt-decode";
+
 
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
