@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config.js";
+import jwt_decode from "jwt-decode";
 
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
@@ -8,6 +9,15 @@ function CreateUser() {
   const [role, setRole] = useState("user");
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Get user role from JWT token when the component mounts
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
+    if (token) {
+      const decodedToken = jwt_decode(token);
+      setRole(decodedToken.role); // Set role from the token
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,11 +37,24 @@ function CreateUser() {
     setMessage(null); // Reset any previous message
 
     try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        setMessage("No JWT token found. Please log in.");
+        return;
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/api/auth/admin/create-user`,
         { username, password, role },
-        { withCredentials: true } // Ensure cookies are sent with the request (if using cookies for authentication)
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token in Authorization header
+          },
+          withCredentials: true, // Ensure cookies are sent with the request if needed
+        }
       );
+
+      console.log("JWT Token: ", token);
 
       if (response.data.success) {
         setMessage("User created successfully");
@@ -67,12 +90,14 @@ function CreateUser() {
       setLoading(false); // Always stop loading after the request
     }
   };
+
   return (
     <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 flex items-center justify-center">
-      <div className=" ">
+      <div>
+        <h2>Welcome {role}</h2> {/* This will show the user's role */}
         <div className="flex justify-center">
           <div className="border p-4 rounded shadow-xl bg-gray-100">
-            <h2 className="text-center mb-4 font-bold text-xl ">Create User</h2>
+            <h2 className="text-center mb-4 font-bold text-xl">Create User</h2>
             <form onSubmit={handleSubmit} className="flex flex-col w-60">
               <label htmlFor="username" className="mb-1">
                 Username
