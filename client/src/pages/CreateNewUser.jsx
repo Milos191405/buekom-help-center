@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { API_BASE_URL } from "../config.js";
-import jwt_decode from "jwt-decode"; // Importing jwt-decode
+import * as jwt_decode from "jwt-decode"; // Importing jwt-decode
 
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
