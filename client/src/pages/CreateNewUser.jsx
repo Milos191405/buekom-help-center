@@ -4,7 +4,7 @@ import { API_BASE_URL } from "../config.js";
 import * as jwt_decode from "jwt-decode";
 
 
-function CreateUser() {
+function CreateUser(role) {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
@@ -151,5 +151,10 @@ function CreateUser() {
     </article>
   );
 }
+
+CreateNewUser.propTypes = {
+  
+  role: PropTypes.string,
+};
 
 export default CreateUser;
