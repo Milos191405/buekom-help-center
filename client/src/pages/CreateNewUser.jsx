@@ -83,7 +83,7 @@ function CreateUser() {
       } else if (error.message === "Network Error") {
         setMessage(
           "Network error. Please check your connection and try again."
-        );import jwt_decode from "jwt-decode";
+        );
 
       } else {
         // Catch any other unexpected errors
