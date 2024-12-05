@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
-import { API_BASE_URL } from "../config.js";
-import * as jwt_decode from "jwt-decode";
+import axios from "axios";
 import PropTypes from "prop-types";
+import { API_BASE_URL } from "../config.js";
+import jwt_decode from "jwt-decode"; // Importing jwt-decode
 
 function CreateUser() {
   const [username, setUsernameLocal] = useState("");
@@ -11,13 +11,12 @@ function CreateUser() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Get user role and username from JWT token when the component mounts
+  // Get user role from JWT token when the component mounts
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
       const decodedToken = jwt_decode(token);
       setRole(decodedToken.role); // Set role from the token
-      setUsernameLocal(decodedToken.username); // Assuming username is in token
     }
   }, []);
 
@@ -93,10 +92,7 @@ function CreateUser() {
   return (
     <article className="text-center mt-[260px] min-h-[calc(100vh-260px)] bg-gray-200 flex items-center justify-center">
       <div>
-        <h2>
-          Welcome {username} ({role})
-        </h2>{" "}
-        {/* This will show the user's username and role */}
+        <h2>Welcome {role}</h2> {/* This will show the user's role */}
         <div className="flex justify-center">
           <div className="border p-4 rounded shadow-xl bg-gray-100">
             <h2 className="text-center mb-4 font-bold text-xl">Create User</h2>
