@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config.js";
-import * as jwt_decode from "jwt-decode"; // Import jwt-decode
+import * as jwt_decode from "jwt-decode";
 
-function CreateUser() {
+
+function CreateUser(role) {
   const [username, setUsernameLocal] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
@@ -15,14 +15,8 @@ function CreateUser() {
   useEffect(() => {
     const token = localStorage.getItem("jwtToken");
     if (token) {
-      try {
-        const decodedToken = jwt_decode(token);
-        setRole(decodedToken.role); // Set role from the token
-      } catch (error) {
-        setMessage("Invalid token.");
-      }
-    } else {
-      setMessage("No JWT token found. Please log in.");
+      const decodedToken = jwt_decode(token);
+      setRole(decodedToken.role); // Set role from the token
     }
   }, []);
 
@@ -57,8 +51,11 @@ function CreateUser() {
           headers: {
             Authorization: `Bearer ${token}`, // Send token in Authorization header
           },
+          withCredentials: true, // Ensure cookies are sent with the request if needed
         }
       );
+
+      console.log("JWT Token: ", token);
 
       if (response.data.success) {
         setMessage("User created successfully");
@@ -76,6 +73,8 @@ function CreateUser() {
       // Handle specific errors
       if (error.response?.status === 401) {
         setMessage("You are not authorized. Please log in again.");
+        // Optionally, redirect to the login page:
+        // window.location.href = "/login";
       } else if (error.response?.status === 403) {
         setMessage("Access denied. You don't have permission to create users.");
       } else if (error.response) {
@@ -85,6 +84,7 @@ function CreateUser() {
           "Network error. Please check your connection and try again."
         );
       } else {
+        // Catch any other unexpected errors
         setMessage("An unexpected error occurred. Please try again later.");
       }
     } finally {
@@ -152,8 +152,9 @@ function CreateUser() {
   );
 }
 
-CreateUser.propTypes = {
+CreateNewUser.propTypes = {
+  
   role: PropTypes.string,
-};
+}
 
 export default CreateUser;
