@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../config.js";
 
 
 
-function HomePage({ isLoggedIn,user, role}) {
+function HomePage({ isLoggedIn, role}) {
   const [username, setUsername] = useState("");
   const [isAdminExist, setIsAdminExist] = useState(false);
   // const [errorMessage, setErrorMessage] = useState("");
@@ -91,7 +91,7 @@ useEffect(() => {
 
         {isLoggedIn && (
           <h1 className="text-xl ">
-            Welcome <span className="text-orange-500">{username} {user.role }</span>!
+            Welcome <span className="text-orange-500">{username} {role }</span>!
           </h1>
         )}
       </div>
@@ -102,7 +102,6 @@ useEffect(() => {
 HomePage.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   role: PropTypes.string,
-  user: PropTypes.object,
  
 };
 export default HomePage;
