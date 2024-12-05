@@ -69,11 +69,13 @@ function App() {
         />
       ),
     },
-    { path: "/create-admin", element: <CreateAdmin /> },
-    { path: "/create-user", element: <CreateUser /> },
+    { path: "/create-admin", element: <CreateAdmin role={role} /> },
+    { path: "/create-user", element: <CreateUser role={role} /> },
     {
       path: "/search",
-      element: <Search isLoggedIn={isLoggedIn} username={username} />,
+      element: (
+        <Search isLoggedIn={isLoggedIn} username={username} role={role} />
+      ),
     },
     {
       path: "/update-files",
